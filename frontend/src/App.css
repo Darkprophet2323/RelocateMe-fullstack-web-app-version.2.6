@@ -49,16 +49,6 @@ a.hoverable {
 
 /* Enhanced mobile responsiveness */
 @media (max-width: 768px) {
-  .spy-cursor .cursor__ball--big {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  
-  .spy-cursor .cursor__ball--small {
-    width: 15px !important;
-    height: 15px !important;
-  }
-  
   /* Ensure text is readable on mobile */
   body {
     font-size: 16px !important;
@@ -88,7 +78,7 @@ a.hoverable {
     cursor: auto !important;
   }
   
-  .spy-cursor {
+  .cursor {
     display: none !important;
   }
   
@@ -100,6 +90,22 @@ a.hoverable {
     align-items: center !important;
     justify-content: center !important;
   }
+}
+
+/* Mobile animations and responsiveness */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
 }
 
 /* Ensure links are always visible and functional */
