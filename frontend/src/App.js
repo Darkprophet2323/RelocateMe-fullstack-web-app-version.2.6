@@ -2201,7 +2201,7 @@ const LoginPage = () => {
           <div className="text-center">
             <button
               onClick={startHackingAnimation}
-              className="bg-white text-black px-8 py-4 font-mono font-bold text-xl tracking-wider hover:bg-gray-200 transition-all duration-300 border-2 border-gray-300 shadow-lg hover:shadow-white/50"
+              className="hoverable primary-button"
             >
               [ INITIATE SYSTEM BREACH ]
             </button>
