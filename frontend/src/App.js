@@ -1,341 +1,1944 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// ============================================================================
-// TRANSITION COMPONENTS
-// ============================================================================
-
-const PageTransition = ({ children, isVisible }) => {
+// Enhanced Progress Wizard Component with Noir Theme
+const ProgressWizard = ({ currentStep, totalSteps, completedSteps }) => {
+  const progressPercentage = (completedSteps / totalSteps) * 100;
+  
   return (
-    <div className={`page-transition ${isVisible ? 'fade-in' : 'fade-out'}`}>
-      {children}
+    <div className="mb-8 bg-black border border-gray-600 shadow-lg p-8 fade-in">
+      <h2 className="text-3xl font-bold text-white mb-6 noir-title">PROGRESS TRACKING</h2>
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-sm font-mono text-gray-300 uppercase tracking-wider">STEP {currentStep} OF {totalSteps}</span>
+        <span className="text-sm font-mono text-gray-300 uppercase tracking-wider">{Math.round(progressPercentage)}% COMPLETE</span>
+      </div>
+      <div className="w-full bg-gray-800 h-2 mb-6 border border-gray-600">
+        <div 
+          className="bg-white h-full transition-all duration-1000 ease-out relative"
+          style={{ width: `${progressPercentage}%` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-pulse"></div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gray-900 border border-gray-700 p-4 text-center">
+          <div className="text-3xl font-bold text-white font-mono">{completedSteps}</div>
+          <div className="text-sm text-gray-400 uppercase tracking-wider">COMPLETED</div>
+        </div>
+        <div className="bg-gray-900 border border-gray-700 p-4 text-center">
+          <div className="text-3xl font-bold text-white font-mono">{totalSteps - completedSteps}</div>
+          <div className="text-sm text-gray-400 uppercase tracking-wider">REMAINING</div>
+        </div>
+        <div className="bg-gray-900 border border-gray-700 p-4 text-center">
+          <div className="text-3xl font-bold text-white font-mono">{totalSteps}</div>
+          <div className="text-sm text-gray-400 uppercase tracking-wider">TOTAL</div>
+        </div>
+      </div>
     </div>
   );
 };
 
-const BridgeTransition = () => {
-  const navigate = useNavigate();
-  const [message, setMessage] = useState("INITIALIZING...");
-  const [glitchActive, setGlitchActive] = useState(true);
-
-  const messages = [
-    "INITIALIZING RELOCATION MATRIX...",
-    "SCANNING REMOTE OPPORTUNITIES...", 
-    "CONNECTING TO THRIVE OS...",
-    "WELCOME TO YOUR NEW LIFE."
+// Navigation Component with Noir Theme
+const Navigation = ({ user, onLogout, currentPath }) => {
+  const navItems = [
+    { path: "/dashboard", name: "DASHBOARD", step: 1, description: "MISSION CONTROL" },
+    { path: "/timeline", name: "TIMELINE", step: 2, description: "OPERATIONAL SCHEDULE" },
+    { path: "/progress", name: "PROGRESS", step: 3, description: "STATUS TRACKING" },
+    { path: "/visa", name: "LEGAL", step: 4, description: "DOCUMENTATION" },
+    { path: "/employment", name: "WORK", step: 5, description: "CAREER SEARCH" },
+    { path: "/housing", name: "HOUSING", step: 6, description: "LOCATION INTEL" },
+    { path: "/logistics", name: "LOGISTICS", step: 7, description: "MOVEMENT OPS" },
+    { path: "/analytics", name: "ANALYTICS", step: 8, description: "DATA ANALYSIS" },
+    { path: "/resources", name: "RESOURCES", step: 9, description: "SUPPORT NETWORK" }
   ];
 
-  useEffect(() => {
-    let messageIndex = 0;
-    const messageInterval = setInterval(() => {
-      if (messageIndex < messages.length) {
-        setMessage(messages[messageIndex]);
-        messageIndex++;
-      }
-    }, 700);
-
-    const glitchInterval = setInterval(() => {
-      setGlitchActive(prev => !prev);
-    }, 200);
-
-    const redirectTimer = setTimeout(() => {
-      navigate('/thrive-os');
-    }, 3500);
-
-    return () => {
-      clearInterval(messageInterval);
-      clearInterval(glitchInterval);
-      clearTimeout(redirectTimer);
-    };
-  }, [navigate]);
-
   return (
-    <div className="bridge-container">
-      <div className="noir-overlay"></div>
-      <div className={`glitch-text ${glitchActive ? 'glitch-active' : ''}`}>
-        {message}
+    <nav className="bg-black bg-opacity-95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/dashboard" className="flex items-center group">
+              <span className="text-2xl font-bold font-serif text-white tracking-tight group-hover:text-gray-300 transition-colors duration-300">
+                RELOCATE
+              </span>
+              <span className="ml-2 text-sm text-gray-400 font-mono hidden lg:block">
+                [ PHOENIX → PEAK DISTRICT ]
+              </span>
+            </Link>
+          </div>
+          
+          <div className="hidden md:flex items-center space-x-1">
+            {navItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-4 py-2 text-xs font-mono font-semibold tracking-wider transition-all duration-300 relative group border-b-2 ${
+                  currentPath === item.path
+                    ? 'text-white border-white bg-gray-900'
+                    : 'text-gray-400 hover:text-white border-transparent hover:border-gray-500 hover:bg-gray-900'
+                }`}
+              >
+                <span className="mr-2 text-gray-600">[{item.step}]</span>
+                {item.name}
+                
+                {/* Tooltip */}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-black border border-gray-600 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 font-mono">
+                  {item.description}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-black"></div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-300 text-sm font-mono">USER: {user.toUpperCase()}</span>
+            <button
+              onClick={onLogout}
+              className="bg-red-900 text-white px-4 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider"
+            >
+              [LOGOUT]
+            </button>
+          </div>
+        </div>
+        
+        {/* Mobile Navigation */}
+        <div className="md:hidden pb-3">
+          <div className="grid grid-cols-3 gap-1">
+            {navItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-center py-2 px-1 text-xs font-mono border ${
+                  currentPath === item.path
+                    ? 'bg-white text-black border-white'
+                    : 'text-gray-400 border-gray-600 hover:text-white hover:border-gray-400'
+                }`}
+              >
+                <div className="font-bold">[{item.step}]</div>
+                <div>{item.name}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="scanning-lines"></div>
-    </div>
+    </nav>
   );
 };
 
-// ============================================================================
-// MAIN PAGES
-// ============================================================================
-
-const RelocateDashboard = () => {
-  const navigate = useNavigate();
-  const [locations, setLocations] = useState([]);
-  const [searchData, setSearchData] = useState({
-    current_location: "",
-    target_cities: [],
-    budget_range: { min: 2000, max: 5000 }
+// Enhanced Dashboard with Noir Theme
+const DashboardPage = () => {
+  const [stats, setStats] = useState({
+    total_steps: 34,
+    completed_steps: 0,
+    in_progress: 0,
+    urgent_tasks: 0
   });
 
-  const featuredLocations = [
-    { name: "Phoenix, AZ", score: 8.2, highlight: "Low cost, tech growth" },
-    { name: "Austin, TX", score: 9.1, highlight: "Thriving startup scene" },
-    { name: "Peak District, UK", score: 9.2, highlight: "Remote-first culture" }
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get(`${API}/api/dashboard/overview`);
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const quickStartSteps = [
+    {
+      title: "DOCUMENTATION PHASE",
+      description: "Gather critical documents: passport, certificates, financial records.",
+      action: "ACCESS LEGAL SECTION",
+      link: "/visa",
+      urgent: true,
+      icon: "📋"
+    },
+    {
+      title: "TIMELINE ANALYSIS",
+      description: "Review 34-step operational timeline for relocation protocol.",
+      action: "VIEW TIMELINE",
+      link: "/timeline",
+      urgent: false,
+      icon: "📅"
+    },
+    {
+      title: "EMPLOYMENT SEARCH",
+      description: "Scout 8 verified opportunities in target region.",
+      action: "BROWSE POSITIONS",
+      link: "/employment",
+      urgent: false,
+      icon: "💼"
+    }
   ];
 
-  const handleLocationSearch = async () => {
-    if (!searchData.current_location) return;
-    
+  const essentialLinks = [
+    { name: "UK GOVERNMENT", url: "https://www.gov.uk", description: "Official state portal" },
+    { name: "VISA CENTRAL", url: "https://www.gov.uk/browse/visas-immigration", description: "Immigration command" },
+    { name: "PEAK DISTRICT HQ", url: "https://www.peakdistrict.gov.uk", description: "Target region intel" },
+    { name: "NHS REGISTRATION", url: "https://www.nhs.uk/using-the-nhs/nhs-services/gps/how-to-register-with-a-gp-practice/", description: "Medical system access" },
+    { 
+      name: "~ Mission Debrief: Mission Console ~", 
+      url: "https://os-theme-verify.emergent.host/", 
+      description: "OS Noir Command Interface", 
+      special: true 
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <div className="text-center mb-12 fade-in">
+          <h1 className="text-6xl md:text-8xl font-bold font-serif text-white mb-6 typewriter">
+            RELOCATION
+          </h1>
+          <div className="text-2xl md:text-4xl font-mono text-gray-300 mb-8 tracking-widest">
+            [ MISSION: PHOENIX → PEAK DISTRICT ]
+          </div>
+          <p className="text-lg text-gray-400 mb-8 max-w-3xl mx-auto font-mono leading-relaxed">
+            CLASSIFIED OPERATION: International relocation protocol from Phoenix, Arizona to Peak District, UK. 
+            Follow systematic approach for mission success.
+          </p>
+          
+          {/* Progress Overview */}
+          <ProgressWizard 
+            currentStep={stats.completed_steps + 1} 
+            totalSteps={stats.total_steps} 
+            completedSteps={stats.completed_steps} 
+          />
+        </div>
+
+        {/* Quick Start Mission Briefing */}
+        <div className="mb-12 slide-in-left">
+          <h2 className="text-3xl font-bold text-white mb-8 font-serif text-center">MISSION BRIEFING</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {quickStartSteps.map((step, index) => (
+              <div key={index} className={`bg-black border-2 p-8 transition-all duration-500 hover:border-white hover:bg-gray-900 group ${step.urgent ? 'border-red-600' : 'border-gray-600'}`}>
+                {step.urgent && (
+                  <div className="flex items-center mb-4">
+                    <span className="bg-red-900 text-red-200 text-xs font-mono font-bold px-3 py-1 border border-red-700 tracking-wider">
+                      PRIORITY ALPHA
+                    </span>
+                  </div>
+                )}
+                <div className="text-4xl mb-4">{step.icon}</div>
+                <h3 className="text-xl font-bold text-white mb-4 font-mono tracking-wide">{step.title}</h3>
+                <p className="text-gray-400 mb-6 leading-relaxed">{step.description}</p>
+                <Link 
+                  to={step.link}
+                  className="inline-block bg-white text-black px-6 py-3 font-mono font-bold text-sm tracking-wider hover:bg-gray-200 transition-all duration-300 border-2 border-white group-hover:bg-black group-hover:text-white"
+                >
+                  {step.action} →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Status Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div className="bg-black border border-gray-600 p-6 text-center hover:border-white transition-all duration-300">
+            <div className="text-4xl font-bold text-white mb-2 font-mono">{stats.total_steps}</div>
+            <div className="text-gray-400 text-sm font-mono tracking-wider">TOTAL OBJECTIVES</div>
+          </div>
+          <div className="bg-black border border-gray-600 p-6 text-center hover:border-white transition-all duration-300">
+            <div className="text-4xl font-bold text-white mb-2 font-mono">{stats.completed_steps}</div>
+            <div className="text-gray-400 text-sm font-mono tracking-wider">OBJECTIVES COMPLETE</div>
+          </div>
+          <div className="bg-black border border-gray-600 p-6 text-center hover:border-white transition-all duration-300">
+            <div className="text-4xl font-bold text-white mb-2 font-mono">{stats.in_progress}</div>
+            <div className="text-gray-400 text-sm font-mono tracking-wider">IN PROGRESS</div>
+          </div>
+          <div className="bg-black border border-gray-600 p-6 text-center hover:border-white transition-all duration-300">
+            <div className="text-4xl font-bold text-white mb-2 font-mono">{stats.urgent_tasks}</div>
+            <div className="text-gray-400 text-sm font-mono tracking-wider">CRITICAL TASKS</div>
+          </div>
+        </div>
+
+        {/* Essential Command Links */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-white mb-8 font-serif text-center">ESSENTIAL COMMAND LINKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {essentialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (link.special) {
+                    e.preventDefault();
+                    window.open(link.url, '_blank', 'noopener,noreferrer');
+                  }
+                }}
+                className={`bg-black border border-gray-600 p-6 hover:border-white hover:bg-gray-900 transition-all duration-300 group block ${
+                  link.special ? 'border-red-600 bg-red-900 hover:bg-red-800' : ''
+                }`}
+              >
+                <h3 className={`font-bold mb-3 font-mono tracking-wide group-hover:text-gray-200 ${
+                  link.special ? 'text-red-200' : 'text-white'
+                }`}>{link.name}</h3>
+                <p className={`text-sm font-mono ${
+                  link.special ? 'text-red-300' : 'text-gray-400'
+                }`}>{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Mission Control Center */}
+        <div className="bg-black border border-gray-600 p-8 text-center hover:border-white transition-all duration-300">
+          <h2 className="text-3xl font-bold text-white mb-6 font-serif">MISSION CONTROL</h2>
+          <p className="text-gray-400 mb-8 font-mono text-lg leading-relaxed">
+            Ready to commence relocation protocol. Select operational mode to begin systematic progression 
+            toward target destination. All systems operational.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              to="/timeline"
+              className="bg-white text-black px-8 py-4 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 border-2 border-white"
+            >
+              [TIMELINE] INITIATE SEQUENCE
+            </Link>
+            <Link 
+              to="/progress"
+              className="bg-transparent text-white px-8 py-4 font-mono font-bold tracking-wider border-2 border-white hover:bg-white hover:text-black transition-all duration-300"
+            >
+              [PROGRESS] STATUS CHECK
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Timeline Page with Noir Theme
+const TimelinePage = () => {
+  const [timelineData, setTimelineData] = useState({
+    timeline: [],
+    categories: {}
+  });
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [completedCount, setCompletedCount] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API}/api/timeline/full`);
+        setTimelineData({
+          timeline: response.data.timeline || [],
+          categories: {}
+        });
+        
+        // Count completed steps
+        const completed = (response.data.timeline || []).filter(step => step.is_completed).length;
+        setCompletedCount(completed);
+      } catch (error) {
+        console.error('Error fetching timeline data:', error);
+        // Use fallback data
+        setTimelineData({
+          timeline: [
+            { id: 1, title: "Initial Research & Decision", description: "Research Peak District areas, cost of living, and lifestyle", category: "Planning", is_completed: false },
+            { id: 2, title: "Create Relocation Budget", description: "Calculate moving costs, visa fees, initial living expenses", category: "Planning", is_completed: false },
+            { id: 3, title: "Visa Research", description: "Determine visa type needed (work, skilled worker, family, etc.)", category: "Visa & Legal", is_completed: false }
+          ],
+          categories: {}
+        });
+      }
+    };
+    fetchData();
+  }, []);
+
+  const updateStepProgress = async (stepId, completed) => {
     try {
-      const response = await axios.post(`${API}/search-locations`, {
-        user_id: "user_001",
-        ...searchData,
-        preferences: { climate: "moderate", cost_of_living: "medium" }
+      await axios.post(`${API}/api/timeline/update-progress`, {
+        step_id: stepId,
+        completed: completed
       });
-      console.log("Search created:", response.data);
+      
+      // Refresh timeline data
+      const response = await axios.get(`${API}/api/timeline/full`);
+      setTimelineData({
+        timeline: response.data.timeline || [],
+        categories: {}
+      });
+      
+      // Update completed count
+      const newCompleted = (response.data.timeline || []).filter(step => step.is_completed).length;
+      setCompletedCount(newCompleted);
+      
     } catch (error) {
-      console.error("Search failed:", error);
+      console.error('Error updating step progress:', error);
     }
   };
 
-  const initiateTransition = () => {
-    navigate('/bridge');
-  };
+  const filteredSteps = timelineData.timeline || [];
+
+  const timelineLinks = [
+    { name: "UK GOV TIMELINE", url: "https://www.gov.uk/browse/visas-immigration", description: "Official protocol guidance" },
+    { name: "MOVE CALCULATOR", url: "https://www.internationalmovers.com/international-moving-timeline", description: "Logistics timeline tool" },
+    { name: "EXPAT PROTOCOLS", url: "https://www.expatfocus.com/expatriate-relocation-checklist", description: "Standard operating procedures" }
+  ];
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="logo-section">
-          <h1 className="main-title">RELOCATE<span className="accent">ME</span></h1>
-          <p className="subtitle">MISSION: PHOENIX ➔ PEAK DISTRICT</p>
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            OPERATIONAL TIMELINE
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ 34-STEP RELOCATION PROTOCOL: PHOENIX → PEAK DISTRICT ]
+          </p>
+          
+          <ProgressWizard 
+            currentStep={completedCount + 1} 
+            totalSteps={filteredSteps.length} 
+            completedSteps={completedCount} 
+          />
         </div>
-        <div className="status-indicator">
-          <span className="status-dot"></span>
-          <span>SYSTEM OPERATIONAL</span>
-        </div>
-      </header>
 
-      <main className="dashboard-main">
-        <section className="hero-section">
-          <div className="hero-content">
-            <h2 className="hero-title">Your Cinematic Relocation Journey</h2>
-            <p className="hero-description">
-              Discover the perfect location for your remote career. Our AI analyzes 
-              thousands of data points to match you with opportunities that align 
-              with your lifestyle and professional goals.
-            </p>
-          </div>
-        </section>
-
-        <section className="search-section">
-          <div className="search-form">
-            <h3>Begin Your Location Search</h3>
-            <div className="form-grid">
-              <input
-                type="text"
-                placeholder="Current Location"
-                value={searchData.current_location}
-                onChange={(e) => setSearchData({...searchData, current_location: e.target.value})}
-                className="location-input"
-              />
-              <input
-                type="text"
-                placeholder="Target Cities (comma separated)"
-                onChange={(e) => setSearchData({
-                  ...searchData, 
-                  target_cities: e.target.value.split(',').map(s => s.trim())
-                })}
-                className="location-input"
-              />
-              <div className="budget-range">
-                <label>Budget Range</label>
-                <div className="range-inputs">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={searchData.budget_range.min}
-                    onChange={(e) => setSearchData({
-                      ...searchData, 
-                      budget_range: {...searchData.budget_range, min: parseInt(e.target.value)}
-                    })}
-                    className="budget-input"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={searchData.budget_range.max}
-                    onChange={(e) => setSearchData({
-                      ...searchData, 
-                      budget_range: {...searchData.budget_range, max: parseInt(e.target.value)}
-                    })}
-                    className="budget-input"
-                  />
-                </div>
-              </div>
-            </div>
-            <button onClick={handleLocationSearch} className="search-button">
-              Analyze Locations
-            </button>
-          </div>
-        </section>
-
-        <section className="featured-locations">
-          <h3>Featured Opportunities</h3>
-          <div className="locations-grid">
-            {featuredLocations.map((location, index) => (
-              <div key={index} className="location-card">
-                <div className="location-score">{location.score}</div>
-                <h4 className="location-name">{location.name}</h4>
-                <p className="location-highlight">{location.highlight}</p>
-                <button className="explore-button">Explore</button>
-              </div>
+        {/* Timeline Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">REFERENCE MATERIALS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {timelineLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-6 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-3 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
             ))}
           </div>
-        </section>
+        </div>
 
-        <section className="transition-section">
-          <div className="transition-prompt">
-            <h3>Ready to Connect with Remote Opportunities?</h3>
-            <p>Access ThriveRemoteOS to discover jobs tailored to your new location</p>
-            <button onClick={initiateTransition} className="transition-button">
-              INITIATE CONNECTION
-            </button>
+        {/* Timeline Steps */}
+        <div className="space-y-6">
+          {filteredSteps.map((step, index) => (
+            <div
+              key={step.id}
+              className={`bg-black border-2 p-8 transition-all duration-500 hover:bg-gray-900 ${
+                step.is_completed ? 'border-white bg-gray-900' : 'border-gray-600 hover:border-gray-400'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center mb-6">
+                    <div className="mr-6 flex-shrink-0">
+                      <div className={`w-12 h-12 border-2 flex items-center justify-center font-bold text-lg font-mono ${
+                        step.is_completed ? 'bg-white text-black border-white' : 'bg-black text-white border-gray-600'
+                      }`}>
+                        {step.is_completed ? '✓' : String(index + 1).padStart(2, '0')}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <label className="flex items-center cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={step.is_completed}
+                          onChange={(e) => updateStepProgress(step.id, e.target.checked)}
+                          className="mr-4 w-6 h-6 border-2 border-gray-600 bg-black checked:bg-white checked:border-white appearance-none cursor-pointer relative"
+                          style={{
+                            backgroundImage: step.is_completed ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e\")" : 'none'
+                          }}
+                        />
+                        <h3 className={`text-2xl font-bold font-mono tracking-wide transition-all duration-300 ${
+                          step.is_completed ? 'text-white line-through' : 'text-white group-hover:text-gray-300'
+                        }`}>
+                          {step.title}
+                        </h3>
+                      </label>
+                      <div className="flex items-center mt-3 space-x-4">
+                        <span className="px-3 py-1 text-sm border border-gray-600 text-gray-300 font-mono tracking-wider uppercase">
+                          {step.category}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 mb-6 leading-relaxed font-mono">{step.description}</p>
+                </div>
+                
+                {step.is_completed && (
+                  <div className="ml-6 text-white text-3xl">
+                    ✅
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredSteps.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg font-mono">LOADING OPERATIONAL DATA...</p>
           </div>
-        </section>
-      </main>
+        )}
+      </div>
     </div>
   );
 };
 
-const ThriveRemoteOS = () => {
-  const [systemStatus, setSystemStatus] = useState(null);
-  const [jobRecommendations, setJobRecommendations] = useState([]);
-  const [userProfile, setUserProfile] = useState(null);
+// Enhanced Progress Page with Interactive Checklist and Noir Theme
+const ProgressPage = () => {
+  const [progressItems, setProgressItems] = useState([]);
+  const [editingNotes, setEditingNotes] = useState(null);
+  const [tempNote, setTempNote] = useState('');
 
   useEffect(() => {
-    const fetchSystemData = async () => {
+    fetchProgressItems();
+  }, []);
+
+  const fetchProgressItems = async () => {
+    try {
+      const response = await axios.get(`${API}/api/progress/items`);
+      setProgressItems(response.data.items || []);
+    } catch (error) {
+      console.error('Error fetching progress items:', error);
+      // Use fallback data
+      setProgressItems([
+        {
+          id: '1',
+          title: 'Gather Birth Certificate',
+          description: 'Obtain certified copy of birth certificate for visa application',
+          status: 'completed',
+          category: 'Documentation',
+          subtasks: [
+            { task: 'Request birth certificate online', completed: true },
+            { task: 'Pay processing fee', completed: true },
+            { task: 'Receive by mail', completed: true }
+          ],
+          notes: 'Received certified copy from state office. Cost $25.'
+        },
+        {
+          id: '2',
+          title: 'Complete Visa Application Form',
+          description: 'Fill out UK Skilled Worker visa application online',
+          status: 'in_progress',
+          category: 'Visa Application',
+          subtasks: [
+            { task: 'Create UK government account', completed: true },
+            { task: 'Fill application form', completed: false },
+            { task: 'Upload documents', completed: false }
+          ],
+          notes: 'Application 70% complete.'
+        }
+      ]);
+    }
+  };
+
+  const updateItemStatus = async (itemId, newStatus) => {
+    try {
+      await axios.put(`${API}/api/progress/items/${itemId}`, {
+        status: newStatus
+      });
+      fetchProgressItems();
+    } catch (error) {
+      console.error('Error updating item status:', error);
+    }
+  };
+
+  const toggleSubtask = async (itemId, subtaskIndex) => {
+    try {
+      await axios.post(`${API}/api/progress/items/${itemId}/subtasks/${subtaskIndex}/toggle`);
+      fetchProgressItems();
+    } catch (error) {
+      console.error('Error toggling subtask:', error);
+    }
+  };
+
+  const saveNotes = async (itemId, notes) => {
+    try {
+      await axios.put(`${API}/api/progress/items/${itemId}`, {
+        notes: notes
+      });
+      setEditingNotes(null);
+      setTempNote('');
+      fetchProgressItems();
+    } catch (error) {
+      console.error('Error saving notes:', error);
+    }
+  };
+
+  const startEditingNotes = (item) => {
+    setEditingNotes(item.id);
+    setTempNote(item.notes || '');
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed': return 'border-white text-white bg-gray-900';
+      case 'in_progress': return 'border-yellow-600 text-yellow-400 bg-yellow-900';
+      case 'blocked': return 'border-red-600 text-red-400 bg-red-900';
+      default: return 'border-gray-600 text-gray-300 bg-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'completed': return '✅';
+      case 'in_progress': return '🔄';
+      case 'blocked': return '🚫';
+      default: return '⏳';
+    }
+  };
+
+  const completedItems = progressItems.filter(item => item.status === 'completed').length;
+  const totalItems = progressItems.length;
+
+  const progressLinks = [
+    { name: "TRELLO COMMAND", url: "https://trello.com", description: "Task management system" },
+    { name: "MOVING INTEL", url: "https://www.moving.com/tips/moving-checklist/", description: "Operational guidelines" },
+    { name: "MOBILE APPS", url: "https://www.apartmenttherapy.com/best-moving-apps-36683126", description: "Field support tools" },
+    { name: "EXPAT NETWORK", url: "https://www.internations.org", description: "Agent network access" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            STATUS TRACKING
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ INTERACTIVE MISSION PROGRESS MONITOR ]
+          </p>
+          
+          <ProgressWizard 
+            currentStep={completedItems + 1} 
+            totalSteps={totalItems} 
+            completedSteps={completedItems} 
+          />
+        </div>
+
+        {/* Progress Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">SUPPORT SYSTEMS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {progressLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-4 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-2 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Progress Items */}
+        <div className="space-y-6">
+          {progressItems.map((item, index) => (
+            <div key={item.id} className="bg-black border border-gray-600 p-8 transition-all duration-300 hover:border-white hover:bg-gray-900">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center space-x-6">
+                  <div className={`w-16 h-16 border-2 flex items-center justify-center text-2xl font-bold font-mono ${
+                    item.status === 'completed' ? 'bg-white text-black border-white' : 
+                    item.status === 'in_progress' ? 'bg-yellow-900 border-yellow-600 text-yellow-400' :
+                    item.status === 'blocked' ? 'bg-red-900 border-red-600 text-red-400' : 'bg-gray-800 border-gray-600 text-gray-300'
+                  }`}>
+                    {getStatusIcon(item.status)}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white font-mono tracking-wide">{item.title}</h2>
+                    <span className={`inline-block px-4 py-2 text-sm font-mono font-bold tracking-wider uppercase border ${getStatusColor(item.status)}`}>
+                      {item.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <select
+                    value={item.status}
+                    onChange={(e) => updateItemStatus(item.id, e.target.value)}
+                    className="border-2 border-gray-600 bg-black text-white px-4 py-2 font-mono focus:border-white focus:outline-none transition-all duration-300"
+                  >
+                    <option value="not_started">NOT STARTED</option>
+                    <option value="in_progress">IN PROGRESS</option>
+                    <option value="completed">COMPLETED</option>
+                    <option value="blocked">BLOCKED</option>
+                  </select>
+                </div>
+              </div>
+
+              <p className="text-gray-300 mb-6 leading-relaxed font-mono">{item.description}</p>
+
+              {/* Progress Bar */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-mono text-gray-400 tracking-wider uppercase">SUBTASK PROGRESS</span>
+                  <span className="text-sm text-gray-400 font-mono">
+                    {item.subtasks.filter(st => st.completed).length}/{item.subtasks.length}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-800 h-2 border border-gray-600">
+                  <div 
+                    className="bg-white h-full transition-all duration-500 relative"
+                    style={{ 
+                      width: `${(item.subtasks.filter(st => st.completed).length / item.subtasks.length) * 100}%` 
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Interactive Subtasks */}
+              <div className="space-y-4 mb-8">
+                <h3 className="font-semibold text-white font-mono tracking-wider">TASK CHECKLIST:</h3>
+                {item.subtasks.map((subtask, subIndex) => (
+                  <label key={subIndex} className="flex items-center cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={subtask.completed}
+                      onChange={() => toggleSubtask(item.id, subIndex)}
+                      className="mr-4 w-6 h-6 border-2 border-gray-600 bg-black checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-200"
+                      style={{
+                        backgroundImage: subtask.completed ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e\")" : 'none'
+                      }}
+                    />
+                    <span className={`font-mono transition-all duration-200 group-hover:text-white ${
+                      subtask.completed ? 'line-through text-gray-500' : 'text-gray-300'
+                    }`}>
+                      {subtask.task}
+                    </span>
+                    {subtask.completed && (
+                      <span className="ml-3 text-white">✅</span>
+                    )}
+                  </label>
+                ))}
+              </div>
+
+              {/* Notes Section */}
+              <div className="border-t border-gray-700 pt-6">
+                <h3 className="font-semibold text-white mb-4 font-mono tracking-wider">OPERATIONAL NOTES:</h3>
+                {editingNotes === item.id ? (
+                  <div className="space-y-4">
+                    <textarea
+                      value={tempNote}
+                      onChange={(e) => setTempNote(e.target.value)}
+                      className="w-full p-4 border-2 border-gray-600 bg-black text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+                      rows="4"
+                      placeholder="Enter operational notes..."
+                    />
+                    <div className="flex space-x-4">
+                      <button
+                        onClick={() => saveNotes(item.id, tempNote)}
+                        className="bg-white text-black px-6 py-3 border-2 border-white hover:bg-gray-200 transition-all duration-300 font-mono font-bold tracking-wider"
+                      >
+                        [SAVE]
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingNotes(null);
+                          setTempNote('');
+                        }}
+                        className="bg-transparent text-white px-6 py-3 border-2 border-gray-600 hover:border-white transition-all duration-300 font-mono font-bold tracking-wider"
+                      >
+                        [CANCEL]
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="bg-gray-900 border border-gray-700 p-4">
+                      <p className="text-gray-300 font-mono leading-relaxed">
+                        {item.notes || 'No operational notes recorded. Click "EDIT NOTES" to add intelligence data.'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => startEditingNotes(item)}
+                      className="text-white hover:text-gray-300 font-mono font-bold tracking-wider"
+                    >
+                      [EDIT NOTES]
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {progressItems.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-6">📋</div>
+            <h2 className="text-3xl font-bold text-white mb-4 font-serif">NO ACTIVE MISSIONS</h2>
+            <p className="text-gray-400 font-mono">Initialize timeline sequence to generate progress items.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Visa & Legal Page with Interactive Document Checklist and Noir Theme
+const VisaPage = () => {
+  const [visaRequirements, setVisaRequirements] = useState({ visa_types: [] });
+  const [selectedVisa, setSelectedVisa] = useState(null);
+  const [documentChecklist, setDocumentChecklist] = useState({});
+
+  useEffect(() => {
+    const fetchVisaData = async () => {
       try {
-        const [statusRes, jobsRes] = await Promise.all([
-          axios.get(`${API}/system/status`),
-          axios.get(`${API}/jobs/recommendations/user_001`)
-        ]);
-        
-        setSystemStatus(statusRes.data);
-        setJobRecommendations(jobsRes.data.recommendations);
+        const response = await axios.get(`${API}/api/visa/requirements`);
+        setVisaRequirements(response.data);
+        if (response.data.visa_types && response.data.visa_types.length > 0) {
+          setSelectedVisa(response.data.visa_types[0]);
+        }
       } catch (error) {
-        console.error("Failed to fetch system data:", error);
+        console.error('Error fetching visa data:', error);
+        // Use fallback data
+        const fallbackData = {
+          visa_types: [
+            {
+              id: '1',
+              visa_type: 'Skilled Worker Visa',
+              fee: '£719 - £1,423',
+              processing_time: '3-8 weeks',
+              requirements: ['Job offer from UK employer', 'Certificate of sponsorship', 'English language proficiency'],
+              application_process: ['Secure job offer', 'Receive certificate', 'Apply online', 'Attend biometric appointment'],
+              required_documents: {
+                'identity': ['Valid passport', 'Birth certificate', 'Marriage certificate'],
+                'financial': ['Bank statements', 'Salary evidence', 'Tax returns'],
+                'employment': ['Job offer letter', 'Certificate of sponsorship', 'Qualifications']
+              }
+            }
+          ]
+        };
+        setVisaRequirements(fallbackData);
+        setSelectedVisa(fallbackData.visa_types[0]);
       }
     };
+    fetchVisaData();
+  }, []);
 
-    fetchSystemData();
+  const toggleDocument = (category, docIndex) => {
+    const key = `${category}_${docIndex}`;
+    setDocumentChecklist(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const getDocumentProgress = () => {
+    const checkedDocs = Object.values(documentChecklist).filter(Boolean).length;
+    const totalDocs = Object.keys(documentChecklist).length;
+    return { checked: checkedDocs, total: totalDocs };
+  };
+
+  if (!selectedVisa) {
+    return <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-xl text-white font-mono">LOADING CLASSIFIED DATA...</div>
+    </div>;
+  }
+
+  const progress = getDocumentProgress();
+  const progressPercentage = progress.total > 0 ? (progress.checked / progress.total) * 100 : 0;
+
+  const visaLinks = [
+    { name: "UK GOV PORTAL", url: "https://www.gov.uk/browse/visas-immigration", description: "Official state immigration command" },
+    { name: "LEGAL COUNSEL", url: "https://www.lawsociety.org.uk", description: "Qualified immigration attorneys" },
+    { name: "DOCUMENT SERVICES", url: "https://www.gov.uk/get-document-legalised", description: "Authorization and apostille" },
+    { name: "APPLICATION CENTER", url: "https://www.vfsglobal.co.uk", description: "Biometric processing facilities" },
+    { name: "LANGUAGE TESTING", url: "https://www.ielts.org", description: "English proficiency certification" },
+    { name: "MEDICAL EXAM", url: "https://www.gov.uk/tb-test-visa", description: "Health screening requirements" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            LEGAL DOCUMENTATION
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ VISA REQUIREMENTS & CLASSIFICATION PROTOCOLS ]
+          </p>
+          
+          {/* Document Progress */}
+          <div className="bg-black border border-gray-600 p-8 mb-8 hover:border-white transition-all duration-300">
+            <h2 className="text-3xl font-bold text-white mb-6 font-mono tracking-wider">DOCUMENT STATUS</h2>
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-sm font-mono text-gray-400 tracking-wider uppercase">DOCUMENTS VERIFIED</span>
+              <span className="text-sm font-mono text-gray-400 tracking-wider">{progress.checked} OF {progress.total}</span>
+            </div>
+            <div className="w-full bg-gray-800 h-3 mb-6 border border-gray-600">
+              <div 
+                className="bg-white h-full transition-all duration-1000 ease-out relative"
+                style={{ width: `${progressPercentage}%` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-pulse"></div>
+              </div>
+            </div>
+            <p className="text-gray-300 font-mono">
+              {progress.checked === progress.total && progress.total > 0 
+                ? "✅ ALL DOCUMENTS VERIFIED - READY FOR SUBMISSION" 
+                : `CONTINUE VERIFICATION: ${progress.total - progress.checked} DOCUMENTS PENDING`
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* Visa Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">SUPPORT NETWORKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visaLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-4 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-2 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Selected Visa Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Visa Information */}
+          <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+            <h2 className="text-2xl font-bold text-white mb-6 font-mono tracking-wider">
+              {selectedVisa.visa_type.toUpperCase()} SPECS
+            </h2>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center p-4 bg-gray-900 border border-gray-700">
+                <span className="font-mono text-gray-300">APPLICATION FEE:</span>
+                <span className="text-xl font-bold text-white font-mono">{selectedVisa.fee}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-900 border border-gray-700">
+                <span className="font-mono text-gray-300">PROCESSING TIME:</span>
+                <span className="text-xl font-bold text-white font-mono">{selectedVisa.processing_time}</span>
+              </div>
+              <div className="p-4 bg-gray-900 border border-gray-700">
+                <h3 className="font-semibold mb-3 text-white font-mono tracking-wider">REQUIREMENTS:</h3>
+                <ul className="space-y-2">
+                  {selectedVisa.requirements.map((req, index) => (
+                    <li key={index} className="text-sm text-gray-300 flex items-start font-mono">
+                      <span className="text-white mr-3">▸</span>
+                      {req}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Application Process */}
+          <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+            <h2 className="text-2xl font-bold text-white mb-6 font-mono tracking-wider">
+              OPERATION SEQUENCE
+            </h2>
+            <div className="space-y-6">
+              {selectedVisa.application_process.map((step, index) => (
+                <div key={index} className="flex items-start">
+                  <div className="flex-shrink-0 w-10 h-10 bg-white text-black border-2 border-white flex items-center justify-center font-bold text-sm mr-4 font-mono">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-300 font-mono">{step}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Interactive Document Checklist */}
+        <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+          <h2 className="text-2xl font-bold text-white mb-8 font-mono tracking-wider">
+            DOCUMENT VERIFICATION CHECKLIST
+          </h2>
+          <p className="text-gray-300 mb-8 font-mono leading-relaxed">
+            Verify each document as collected. This system tracks progress and ensures compliance with requirements.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Object.entries(selectedVisa.required_documents).map(([category, documents], categoryIndex) => {
+              const colors = [
+                'border-l-white bg-gray-900',
+                'border-l-gray-400 bg-gray-900',
+                'border-l-gray-500 bg-gray-900'
+              ];
+              
+              const categoryDocs = documents.filter(doc => doc.trim() !== '');
+              const checkedInCategory = categoryDocs.filter((_, docIndex) => 
+                documentChecklist[`${category}_${docIndex}`]
+              ).length;
+              
+              return (
+                <div key={category} className={`border-l-4 border border-gray-600 p-6 transition-all duration-300 hover:border-white ${colors[categoryIndex % colors.length]}`}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold text-white capitalize font-mono tracking-wider">
+                      {category.replace('_', ' ')}
+                    </h3>
+                    <span className="bg-white text-black px-3 py-1 text-sm font-mono font-bold tracking-wider">
+                      {checkedInCategory}/{categoryDocs.length}
+                    </span>
+                  </div>
+                  
+                  <ul className="space-y-4">
+                    {categoryDocs.map((doc, docIndex) => {
+                      const isChecked = documentChecklist[`${category}_${docIndex}`];
+                      return (
+                        <li key={docIndex} className="flex items-start">
+                          <label className="flex items-start cursor-pointer group w-full">
+                            <input
+                              type="checkbox"
+                              checked={isChecked || false}
+                              onChange={() => toggleDocument(category, docIndex)}
+                              className="mr-4 mt-1 w-5 h-5 border-2 border-gray-600 bg-black checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-200"
+                              style={{
+                                backgroundImage: isChecked ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e\")" : 'none'
+                              }}
+                            />
+                            <span className={`text-sm transition-all duration-200 group-hover:text-white font-mono ${
+                              isChecked ? 'line-through text-gray-500' : 'text-gray-300'
+                            }`}>
+                              {doc}
+                            </span>
+                            {isChecked && (
+                              <span className="ml-3 text-white">✅</span>
+                            )}
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8 text-center">
+          <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+            <h2 className="text-3xl font-bold text-white mb-6 font-serif">OPERATIONAL LINKS</h2>
+            <p className="text-gray-300 mb-8 font-mono leading-relaxed">
+              Access official channels and support networks for visa processing.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="https://www.gov.uk/browse/visas-immigration"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-black px-8 py-4 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 border-2 border-white"
+              >
+                [UK.GOV] OFFICIAL PORTAL
+              </a>
+              <a 
+                href="https://www.vfsglobal.co.uk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-transparent text-white px-8 py-4 font-mono font-bold tracking-wider border-2 border-white hover:bg-white hover:text-black transition-all duration-300"
+              >
+                [BIOMETRIC] APPOINTMENT
+              </a>
+              <Link 
+                to="/timeline"
+                className="bg-gray-900 text-white px-8 py-4 font-mono font-bold tracking-wider border-2 border-gray-600 hover:border-white transition-all duration-300"
+              >
+                [TIMELINE] VIEW SCHEDULE
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Employment Page with Noir Theme
+const EmploymentPage = () => {
+  const [jobsData, setJobsData] = useState({ jobs: [], categories: [], job_types: [] });
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    job_type: 'all',
+    search: ''
+  });
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get(`${API}/api/jobs/listings`);
+        setJobsData(response.data);
+        setFilteredJobs(response.data.jobs);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        // Fallback data
+        const fallbackData = {
+          jobs: [
+            {
+              id: 1,
+              title: "Senior Software Engineer",
+              company: "Peak Tech Solutions",
+              location: "Buxton, Peak District",
+              salary: "£45,000 - £65,000",
+              job_type: "full-time",
+              category: "Technology",
+              description: "Leading software development for innovative solutions in the heart of Peak District.",
+              requirements: ["5+ years experience", "JavaScript/React", "Node.js", "Remote work experience"],
+              benefits: ["Healthcare", "Pension", "Flexible hours", "Remote work"],
+              application_url: "https://example.com/apply",
+              posted_date: "2024-01-15"
+            },
+            {
+              id: 2,
+              title: "Tourism Operations Manager",
+              company: "Peak Adventures Ltd",
+              location: "Bakewell, Peak District",
+              salary: "£35,000 - £42,000",
+              job_type: "full-time",
+              category: "Tourism",
+              description: "Manage tourism operations for outdoor adventure company in Peak District.",
+              requirements: ["Tourism experience", "Leadership skills", "First aid certified", "Driver's license"],
+              benefits: ["Healthcare", "Staff discounts", "Training budget"],
+              application_url: "https://example.com/apply",
+              posted_date: "2024-01-12"
+            }
+          ],
+          categories: ["Technology", "Tourism"],
+          job_types: ["full-time", "part-time", "contract"]
+        };
+        setJobsData(fallbackData);
+        setFilteredJobs(fallbackData.jobs);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    let filtered = jobsData.jobs;
+
+    if (filters.category !== 'all') {
+      filtered = filtered.filter(job => job.category === filters.category);
+    }
+
+    if (filters.job_type !== 'all') {
+      filtered = filtered.filter(job => job.job_type === filters.job_type);
+    }
+
+    if (filters.search) {
+      filtered = filtered.filter(job => 
+        job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        job.company.toLowerCase().includes(filters.search.toLowerCase()) ||
+        job.location.toLowerCase().includes(filters.search.toLowerCase())
+      );
+    }
+
+    setFilteredJobs(filtered);
+  }, [filters, jobsData]);
+
+  const updateFilter = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const employmentLinks = [
+    { name: "INDEED UK", url: "https://uk.indeed.com", description: "Primary job search platform" },
+    { name: "REED COMMAND", url: "https://www.reed.co.uk", description: "UK recruitment specialists" },
+    { name: "LINKEDIN OPS", url: "https://www.linkedin.com/jobs", description: "Professional networking" },
+    { name: "CV GUIDANCE", url: "https://www.gov.uk/cv-tips", description: "UK-specific CV protocols" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            CAREER SEARCH
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ PEAK DISTRICT OPPORTUNITIES DATABASE ]
+          </p>
+        </div>
+
+        {/* Employment Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">RECRUITMENT NETWORKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {employmentLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-4 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-2 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-black border border-gray-600 p-8 mb-8 hover:border-white transition-all duration-300">
+          <h2 className="text-xl font-bold text-white mb-6 font-mono tracking-wider">SEARCH FILTERS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-mono text-gray-400 mb-2 tracking-wider">SEARCH</label>
+              <input
+                type="text"
+                placeholder="Job title, company, location..."
+                value={filters.search}
+                onChange={(e) => updateFilter('search', e.target.value)}
+                className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-mono text-gray-400 mb-2 tracking-wider">CATEGORY</label>
+              <select
+                value={filters.category}
+                onChange={(e) => updateFilter('category', e.target.value)}
+                className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+              >
+                <option value="all">ALL CATEGORIES</option>
+                {jobsData.categories.map(category => (
+                  <option key={category} value={category}>{category.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-mono text-gray-400 mb-2 tracking-wider">TYPE</label>
+              <select
+                value={filters.job_type}
+                onChange={(e) => updateFilter('job_type', e.target.value)}
+                className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+              >
+                <option value="all">ALL TYPES</option>
+                {jobsData.job_types.map(type => (
+                  <option key={type} value={type}>{type.replace('-', ' ').toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => setFilters({ category: 'all', job_type: 'all', search: '' })}
+                className="w-full bg-white text-black px-4 py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300"
+              >
+                [RESET] CLEAR
+              </button>
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-gray-400 font-mono">
+              SHOWING {filteredJobs.length} OF {jobsData.jobs.length} POSITIONS
+            </span>
+          </div>
+        </div>
+
+        {/* Job Listings */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredJobs.map(job => (
+            <div key={job.id} className="bg-black border border-gray-600 p-8 transition-all duration-300 hover:border-white hover:bg-gray-900">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2 font-mono tracking-wide">{job.title}</h3>
+                  <p className="text-lg text-gray-300 font-mono">{job.company}</p>
+                  <p className="text-gray-400 font-mono">📍 {job.location}</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-white font-mono">{job.salary}</div>
+                  <div className="text-sm text-gray-400 font-mono">{job.job_type.replace('-', ' ').toUpperCase()}</div>
+                </div>
+              </div>
+
+              <p className="text-gray-300 mb-6 leading-relaxed font-mono">{job.description}</p>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="px-3 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-sm font-mono font-bold tracking-wider">
+                  {job.category}
+                </span>
+                <span className="px-3 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-sm font-mono font-bold tracking-wider">
+                  {job.job_type.replace('-', ' ').toUpperCase()}
+                </span>
+              </div>
+
+              <div className="border-t border-gray-700 pt-6">
+                <h4 className="font-semibold text-white mb-3 font-mono tracking-wider">REQUIREMENTS:</h4>
+                <ul className="text-sm text-gray-300 space-y-1 mb-6 font-mono">
+                  {job.requirements.slice(0, 3).map((req, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <span className="text-white mr-3">▸</span>
+                      {req}
+                    </li>
+                  ))}
+                  {job.requirements.length > 3 && (
+                    <li className="text-gray-500 italic font-mono">
+                      +{job.requirements.length - 3} more requirements
+                    </li>
+                  )}
+                </ul>
+
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-400 font-mono">
+                    Posted: {new Date(job.posted_date).toLocaleDateString()}
+                  </div>
+                  <a
+                    href={job.application_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white text-black px-6 py-2 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300"
+                  >
+                    [APPLY] →
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredJobs.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-6">🔍</div>
+            <h2 className="text-3xl font-bold text-white mb-4 font-serif">NO POSITIONS FOUND</h2>
+            <p className="text-gray-400 font-mono">Adjust search criteria or browse all available positions.</p>
+            <button
+              onClick={() => setFilters({ category: 'all', job_type: 'all', search: '' })}
+              className="mt-6 bg-white text-black px-8 py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300"
+            >
+              [SHOW ALL] POSITIONS
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Housing Page with Noir Theme
+const HousingPage = () => {
+  const [selectedTab, setSelectedTab] = useState('comparison');
+
+  const housingLinks = [
+    { name: "RIGHTMOVE", url: "https://www.rightmove.co.uk", description: "Primary property portal" },
+    { name: "ZOOPLA INTEL", url: "https://www.zoopla.co.uk", description: "Property search and valuation" },
+    { name: "SPAREROOM", url: "https://www.spareroom.co.uk", description: "Room rental platform" },
+    { name: "COUNCIL TAX", url: "https://www.gov.uk/council-tax", description: "Tax calculation system" }
+  ];
+
+  const comparison = {
+    phoenix: {
+      name: "Phoenix, Arizona",
+      median_price: "$445,000",
+      rental_price: "$1,400/month",
+      property_tax: "0.6% annually",
+      utilities: "$120/month",
+      climate: "Desert, hot summers",
+      population: "1.7 million",
+      pros: ["Warm weather year-round", "Lower cost of living", "No state income tax", "Growing tech sector"],
+      cons: ["Extreme summer heat", "Water scarcity concerns", "Urban sprawl", "Limited public transport"]
+    },
+    peak_district: {
+      name: "Peak District, UK",
+      median_price: "£285,000",
+      rental_price: "£950/month",
+      property_tax: "Council Tax varies",
+      utilities: "£150/month",
+      climate: "Temperate, mild summers",
+      population: "38,000 residents",
+      pros: ["Stunning natural beauty", "Rich history and culture", "Strong community", "Excellent hiking/outdoor activities"],
+      cons: ["Higher living costs", "Limited job market", "Weather can be unpredictable", "Rural location"]
+    }
+  };
+
+  const propertyTypes = [
+    { 
+      type: "Traditional Stone Cottage", 
+      price: "£200,000 - £400,000", 
+      description: "Characteristic Peak District homes with original features",
+      features: ["Stone construction", "Original beams", "Open fireplaces", "Garden/outdoor space"]
+    },
+    { 
+      type: "Modern Family Home", 
+      price: "£350,000 - £600,000", 
+      description: "Contemporary builds with modern amenities",
+      features: ["Energy efficient", "Modern kitchen", "Multiple bedrooms", "Parking"]
+    },
+    { 
+      type: "Village Terraced House", 
+      price: "£180,000 - £320,000", 
+      description: "Traditional terraced homes in village centers",
+      features: ["Period features", "Village location", "Walking distance to amenities", "Character property"]
+    },
+    { 
+      type: "Rural Farmhouse", 
+      price: "£400,000 - £800,000", 
+      description: "Converted farmhouses with substantial grounds",
+      features: ["Large plot", "Outbuildings", "Privacy", "Rural views"]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            LOCATION INTEL
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ HOUSING ANALYSIS & SEARCH PROTOCOLS ]
+          </p>
+        </div>
+
+        {/* Housing Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">PROPERTY NETWORKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {housingLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-4 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-2 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-gray-900 p-1 border border-gray-700">
+            <button
+              onClick={() => setSelectedTab('comparison')}
+              className={`px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 ${
+                selectedTab === 'comparison'
+                  ? 'bg-white text-black'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              [COMPARISON] LOCATIONS
+            </button>
+            <button
+              onClick={() => setSelectedTab('properties')}
+              className={`px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 ${
+                selectedTab === 'properties'
+                  ? 'bg-white text-black'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              [PROPERTIES] TYPES
+            </button>
+          </div>
+        </div>
+
+        {/* Location Comparison */}
+        {selectedTab === 'comparison' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {Object.entries(comparison).map(([key, location]) => (
+              <div key={key} className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+                <h2 className="text-2xl font-bold text-white mb-6 font-mono tracking-wider">{location.name}</h2>
+                
+                <div className="space-y-4 mb-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-900 border border-gray-700 p-3">
+                      <div className="text-sm text-gray-400 font-mono">Median Home Price</div>
+                      <div className="text-lg font-bold text-white font-mono">{location.median_price}</div>
+                    </div>
+                    <div className="bg-gray-900 border border-gray-700 p-3">
+                      <div className="text-sm text-gray-400 font-mono">Rental Price</div>
+                      <div className="text-lg font-bold text-white font-mono">{location.rental_price}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-900 border border-gray-700 p-3">
+                      <div className="text-sm text-gray-400 font-mono">Property Tax</div>
+                      <div className="text-sm font-medium text-gray-300 font-mono">{location.property_tax}</div>
+                    </div>
+                    <div className="bg-gray-900 border border-gray-700 p-3">
+                      <div className="text-sm text-gray-400 font-mono">Utilities</div>
+                      <div className="text-sm font-medium text-gray-300 font-mono">{location.utilities}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-white mb-2 font-mono tracking-wider">✅ ADVANTAGES</h3>
+                    <ul className="space-y-1">
+                      {location.pros.map((pro, index) => (
+                        <li key={index} className="text-sm text-gray-300 flex items-start font-mono">
+                          <span className="text-white mr-3">+</span>
+                          {pro}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold text-white mb-2 font-mono tracking-wider">⚠️ CHALLENGES</h3>
+                    <ul className="space-y-1">
+                      {location.cons.map((con, index) => (
+                        <li key={index} className="text-sm text-gray-300 flex items-start font-mono">
+                          <span className="text-gray-500 mr-3">-</span>
+                          {con}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Property Types */}
+        {selectedTab === 'properties' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {propertyTypes.map((property, index) => (
+              <div key={index} className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-3 font-mono tracking-wider">{property.type}</h3>
+                <div className="text-2xl font-bold text-white mb-4 font-mono">{property.price}</div>
+                <p className="text-gray-300 mb-6 font-mono">{property.description}</p>
+                
+                <h4 className="font-semibold text-white mb-3 font-mono tracking-wider">KEY FEATURES:</h4>
+                <ul className="space-y-1">
+                  {property.features.map((feature, idx) => (
+                    <li key={idx} className="text-sm text-gray-300 flex items-start font-mono">
+                      <span className="text-white mr-3">▸</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Logistics Page with Noir Theme
+const LogisticsPage = () => {
+  const logisticsLinks = [
+    { name: "INTERNATIONAL MOVERS", url: "https://www.internationalmovers.com", description: "Global moving services" },
+    { name: "CUSTOMS INTEL", url: "https://www.gov.uk/bringing-goods-into-uk-personal-use", description: "UK customs regulations" },
+    { name: "SHIPPING CALC", url: "https://www.shipito.com", description: "International shipping calculator" },
+    { name: "STORAGE UNITS", url: "https://www.safestore.co.uk", description: "Temporary storage solutions" }
+  ];
+
+  const movingCompanies = [
+    {
+      name: "GLOBAL RELOCATIONS",
+      speciality: "International Moves",
+      rating: "4.8/5",
+      estimate: "$4,500 - $7,000",
+      services: ["Full packing", "Customs clearance", "Door-to-door", "Insurance included"]
+    },
+    {
+      name: "PHOENIX TO UK SPECIALISTS",
+      speciality: "US-UK Moves",
+      rating: "4.6/5",
+      estimate: "$3,800 - $6,200",
+      services: ["Pet relocation", "Vehicle shipping", "Storage solutions", "24/7 tracking"]
+    },
+    {
+      name: "PEAK DISTRICT MOVERS",
+      speciality: "Local Delivery",
+      rating: "4.9/5",
+      estimate: "$800 - $1,500",
+      services: ["Final mile delivery", "Unpacking", "Furniture assembly", "Local expertise"]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            MOVEMENT OPS
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ INTERNATIONAL LOGISTICS COORDINATION ]
+          </p>
+        </div>
+
+        {/* Logistics Resources */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 font-mono text-center tracking-wider">LOGISTICS NETWORKS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {logisticsLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black border border-gray-600 p-4 hover:border-white hover:bg-gray-900 transition-all duration-300"
+              >
+                <h3 className="font-bold text-white mb-2 font-mono tracking-wide">{link.name}</h3>
+                <p className="text-gray-400 text-sm font-mono">{link.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Moving Companies */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-white mb-8 font-serif text-center">MOVING COMPANIES</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {movingCompanies.map((company, index) => (
+              <div key={index} className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-3 font-mono tracking-wider">{company.name}</h3>
+                <div className="mb-4">
+                  <span className="bg-gray-900 border border-gray-700 text-gray-300 px-3 py-1 text-sm font-mono font-bold tracking-wider">
+                    {company.speciality}
+                  </span>
+                </div>
+                <div className="mb-4">
+                  <div className="text-2xl font-bold text-white font-mono">{company.estimate}</div>
+                  <div className="text-sm text-gray-400 font-mono">Rating: {company.rating}</div>
+                </div>
+                
+                <h4 className="font-semibold text-white mb-3 font-mono tracking-wider">SERVICES:</h4>
+                <ul className="space-y-1 mb-6">
+                  {company.services.map((service, idx) => (
+                    <li key={idx} className="text-sm text-gray-300 flex items-start font-mono">
+                      <span className="text-white mr-3">▸</span>
+                      {service}
+                    </li>
+                  ))}
+                </ul>
+                
+                <button className="w-full bg-white text-black px-6 py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300">
+                  [REQUEST] QUOTE
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Cost Calculator */}
+        <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300">
+          <h2 className="text-3xl font-bold text-white mb-8 font-serif text-center">COST CALCULATOR</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-gray-900 border border-gray-700 p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2 font-mono">$5,500</div>
+              <div className="text-gray-400 text-sm font-mono tracking-wider">ESTIMATED MOVING COST</div>
+            </div>
+            <div className="bg-gray-900 border border-gray-700 p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2 font-mono">$1,200</div>
+              <div className="text-gray-400 text-sm font-mono tracking-wider">SHIPPING COSTS</div>
+            </div>
+            <div className="bg-gray-900 border border-gray-700 p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2 font-mono">$800</div>
+              <div className="text-gray-400 text-sm font-mono tracking-wider">CUSTOMS & FEES</div>
+            </div>
+            <div className="bg-gray-900 border border-gray-700 p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2 font-mono">4-6</div>
+              <div className="text-gray-400 text-sm font-mono tracking-wider">WEEKS TRANSIT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Analytics Page with Noir Theme
+const AnalyticsPage = () => {
+  const analyticsData = [
+    { metric: "COMPLETION RATE", value: "68%", trend: "+12%", status: "good" },
+    { metric: "TIMELINE PROGRESS", value: "24/34", trend: "+5", status: "good" },
+    { metric: "BUDGET UTILIZED", value: "$12,400", trend: "+$800", status: "neutral" },
+    { metric: "DAYS REMAINING", value: "89", trend: "-7", status: "urgent" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            DATA ANALYSIS
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ PROGRESS INSIGHTS & METRICS DASHBOARD ]
+          </p>
+        </div>
+
+        {/* Analytics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {analyticsData.map((data, index) => (
+            <div key={index} className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300 text-center">
+              <h3 className="text-lg font-bold text-white mb-4 font-mono tracking-wider">{data.metric}</h3>
+              <div className="text-4xl font-bold text-white mb-2 font-mono">{data.value}</div>
+              <div className={`text-sm font-mono ${
+                data.status === 'good' ? 'text-green-400' :
+                data.status === 'urgent' ? 'text-red-400' : 'text-gray-400'
+              }`}>
+                {data.trend}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Progress Visualization */}
+        <div className="bg-black border border-gray-600 p-8 hover:border-white transition-all duration-300 text-center">
+          <h2 className="text-3xl font-bold text-white mb-8 font-serif">MISSION ANALYTICS</h2>
+          <p className="text-gray-400 font-mono text-lg leading-relaxed">
+            Advanced analytics dashboard with real-time progress tracking, timeline forecasting, 
+            and budget analysis coming soon.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Resources Page with Noir Theme
+const ResourcesPage = () => {
+  const [resources, setResources] = useState(null);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const response = await axios.get(`${API}/api/resources/all`);
+        setResources(response.data);
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+        // Fallback data
+        setResources({
+          visa_legal: [
+            { name: "UK Government Visa Guide", url: "https://www.gov.uk/browse/visas-immigration", description: "Official UK visa information" },
+            { name: "Immigration Law Society", url: "https://www.lawsociety.org.uk", description: "Find qualified immigration lawyers" }
+          ],
+          employment: [
+            { name: "Indeed UK", url: "https://uk.indeed.com", description: "Primary job search platform" },
+            { name: "LinkedIn Jobs", url: "https://www.linkedin.com/jobs", description: "Professional networking and jobs" }
+          ],
+          housing: [
+            { name: "Rightmove", url: "https://www.rightmove.co.uk", description: "UK's largest property portal" },
+            { name: "Zoopla", url: "https://www.zoopla.co.uk", description: "Property search and valuation" }
+          ]
+        });
+      }
+    };
+    fetchResources();
   }, []);
 
   return (
-    <div className="thrive-container">
-      <header className="thrive-header">
-        <div className="thrive-logo">
-          <h1>THRIVE<span className="remote-accent">REMOTE</span>OS</h1>
-          <span className="version">v{systemStatus?.version || '5.5'}</span>
-        </div>
-        <div className="system-status">
-          <div className="status-grid">
-            <div className="status-item">
-              <span className="status-label">Uptime</span>
-              <span className="status-value">{systemStatus?.uptime || '99.8%'}</span>
-            </div>
-            <div className="status-item">
-              <span className="status-label">Services</span>
-              <span className="status-value">Online</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="thrive-main">
-        <section className="welcome-section">
-          <h2 className="welcome-title">AI Job Platform V5.5</h2>
-          <p className="welcome-subtitle">
-            Your relocation data has been processed. Here are personalized 
-            remote opportunities that match your new location preferences.
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 fade-in">
+          <h1 className="text-5xl font-bold font-serif text-white mb-6">
+            SUPPORT NETWORK
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 font-mono tracking-wide">
+            [ EXTERNAL RESOURCES & INTELLIGENCE TOOLS ]
           </p>
-        </section>
+        </div>
 
-        <section className="recommendations-section">
-          <h3>Curated Job Matches</h3>
-          <div className="jobs-grid">
-            {jobRecommendations.map((job, index) => (
-              <div key={index} className="job-card">
-                <div className="job-header">
-                  <h4 className="job-title">{job.title}</h4>
-                  <span className="company-name">{job.company}</span>
-                </div>
-                <div className="job-details">
-                  <div className="location-tag">
-                    <span className={job.remote_friendly ? 'remote-friendly' : 'hybrid'}>
-                      {job.location}
-                    </span>
-                  </div>
-                  <div className="salary-range">
-                    ${job.salary_range.min.toLocaleString()} - ${job.salary_range.max.toLocaleString()}
-                  </div>
-                  <div className="skills-required">
-                    {job.required_skills.slice(0, 3).map((skill, idx) => (
-                      <span key={idx} className="skill-tag">{skill}</span>
-                    ))}
-                  </div>
-                  <p className="job-description">{job.description}</p>
-                </div>
-                <div className="job-actions">
-                  <button className="apply-button">Apply Now</button>
-                  <button className="save-button">Save</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="ai-insights">
-          <h3>AI Location Insights</h3>
-          <div className="insights-grid">
-            <div className="insight-card">
-              <h4>Market Analysis</h4>
-              <p>Based on your skills, the remote job market in your target locations shows 23% growth in opportunities.</p>
-            </div>
-            <div className="insight-card">
-              <h4>Salary Optimization</h4>
-              <p>Relocating to your selected area could increase your effective income by 15-20% due to cost of living differences.</p>
-            </div>
-            <div className="insight-card">
-              <h4>Network Expansion</h4>
-              <p>3 professional communities and 12 networking events identified in your target locations.</p>
+        {resources && Object.entries(resources).map(([category, items], categoryIndex) => (
+          <div key={category} className="mb-12">
+            <h2 className="text-3xl font-bold text-white mb-8 font-serif text-center capitalize">
+              {category.replace('_', ' & ')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((resource, index) => (
+                <a
+                  key={index}
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-black border border-gray-600 p-6 hover:border-white hover:bg-gray-900 transition-all duration-300 block"
+                >
+                  <h3 className="font-bold text-white mb-3 font-mono tracking-wide">{resource.name}</h3>
+                  <p className="text-gray-400 text-sm font-mono">{resource.description}</p>
+                </a>
+              ))}
             </div>
           </div>
-        </section>
-      </main>
+        ))}
+
+        {!resources && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-6">🔗</div>
+            <h2 className="text-3xl font-bold text-white mb-4 font-serif">LOADING RESOURCES</h2>
+            <p className="text-gray-400 font-mono">Establishing network connections...</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-// ============================================================================
-// MAIN APP COMPONENT
-// ============================================================================
+// Login Component
+const LoginPage = () => {
+  const [loginUsername, setLoginUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-function App() {
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post(`${API}/api/auth/login`, {
+        username: loginUsername,
+        password: password
+      });
+
+      if (response.data && response.data.access_token) {
+        localStorage.setItem("token", response.data.access_token);
+        localStorage.setItem("username", loginUsername);
+        window.location.reload();
+      } else {
+        setError("Invalid response from server");
+      }
+    } catch (err) {
+      setError("Invalid username or password");
+      console.error("Login error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<RelocateDashboard />} />
-          <Route path="/relocate" element={<RelocateDashboard />} />
-          <Route path="/bridge" element={<BridgeTransition />} />
-          <Route path="/thrive-os" element={<ThriveRemoteOS />} />
-        </Routes>
-      </BrowserRouter>
+    <div className="min-h-screen bg-black flex items-center justify-center p-6">
+      <div className="max-w-md w-full bg-gray-900 border border-gray-700 p-8 shadow-lg">
+        <h1 className="text-4xl font-bold text-white mb-6 font-serif text-center">RELOCATE ME</h1>
+        <p className="text-gray-400 mb-8 text-center font-mono">[ SECURE ACCESS TERMINAL ]</p>
+
+        {error && (
+          <div className="bg-red-900 border border-red-700 text-red-200 p-4 mb-6 font-mono text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <label className="block text-gray-400 mb-2 font-mono text-sm tracking-wider">USERNAME</label>
+            <input
+              type="text"
+              value={loginUsername}
+              onChange={(e) => setLoginUsername(e.target.value)}
+              className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+              required
+            />
+          </div>
+
+          <div className="mb-8">
+            <label className="block text-gray-400 mb-2 font-mono text-sm tracking-wider">PASSWORD</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-white text-black py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
+          >
+            {isLoading ? "AUTHENTICATING..." : "LOGIN"}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center">
+          <p className="text-gray-500 font-mono text-sm">
+            RELOCATE ME: PHOENIX → PEAK DISTRICT
+          </p>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+// Main App Component
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  const [currentPath, setCurrentPath] = useState("/dashboard");
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUsername = localStorage.getItem("username");
+    if (token && storedUsername) {
+      setIsLoggedIn(true);
+      setUsername(storedUsername);
+    }
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setIsLoggedIn(false);
+    setUsername("");
+  };
+
+  // Update current path when location changes
+  const AppContent = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+      setCurrentPath(location.pathname);
+    }, [location]);
+
+    return (
+      <>
+        <Navigation user={username} onLogout={handleLogout} currentPath={currentPath} />
+        <Routes>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/timeline" element={<TimelinePage />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/visa" element={<VisaPage />} />
+          <Route path="/employment" element={<EmploymentPage />} />
+          <Route path="/housing" element={<HousingPage />} />
+          <Route path="/logistics" element={<LogisticsPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </>
+    );
+  };
+
+  return (
+    <Router>
+      {isLoggedIn ? <AppContent /> : <LoginPage />}
+    </Router>
+  );
+};
 
 export default App;
