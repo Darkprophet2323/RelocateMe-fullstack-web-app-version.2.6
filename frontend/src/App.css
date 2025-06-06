@@ -300,6 +300,77 @@ nav {
 }
 
 /* NOIR HACKING ANIMATION STYLES */
+
+/* FINAL BUTTON OVERRIDE - HIGHEST SPECIFICITY */
+* button,
+* input[type="submit"],
+* input[type="button"],
+* .button,
+html button,
+html input[type="submit"],
+html input[type="button"],
+html .button {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  font-family: monospace !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  padding: 12px 24px !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  transition: all 0.3s ease !important;
+  cursor: none !important;
+}
+
+* button:hover,
+* input[type="submit"]:hover,
+* input[type="button"]:hover,
+* .button:hover,
+html button:hover,
+html input[type="submit"]:hover,
+html input[type="button"]:hover,
+html .button:hover {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  transform: translate(-1px, -1px) !important;
+}
+
+/* Special variants with highest specificity */
+* .logout-button,
+html .logout-button {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+  box-shadow: 2px 2px 0px #ff0000 !important;
+}
+
+* .logout-button:hover,
+html .logout-button:hover {
+  background-color: #ff0000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+* .primary-button,
+html .primary-button {
+  background-color: #000000 !important;
+  color: #00ff00 !important;
+  border: 2px solid #00ff00 !important;
+  box-shadow: 2px 2px 0px #00ff00 !important;
+}
+
+* .primary-button:hover,
+html .primary-button:hover {
+  background-color: #00ff00 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+}
 .film-grain {
   background: 
     radial-gradient(circle, transparent 1px, rgba(255,255,255,0.01) 1px),
