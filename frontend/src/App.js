@@ -215,7 +215,7 @@ const ProgressWizard = ({ currentStep, totalSteps, completedSteps }) => {
   );
 };
 
-// Navigation Component with Enhanced Mobile Support
+// Navigation Component - Compact Header with Space for Logout
 const Navigation = ({ user, onLogout, currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -233,32 +233,22 @@ const Navigation = ({ user, onLogout, currentPath }) => {
 
   return (
     <nav className="bg-black bg-opacity-95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/dashboard" className="flex items-center group hoverable">
-              <span className="text-2xl font-bold font-serif text-white tracking-tight group-hover:text-gray-300 transition-colors duration-300">
-                RELOCATE
-              </span>
-              <span className="ml-2 text-sm text-gray-400 font-mono hidden lg:block">
-                [ PHOENIX → PEAK DISTRICT ]
-              </span>
-            </Link>
-          </div>
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="flex justify-between h-14">
           
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          {/* Desktop Navigation - Full Width */}
+          <div className="hidden md:flex items-center space-x-1 flex-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`hoverable px-4 py-2 text-xs font-mono font-semibold tracking-wider transition-all duration-300 relative group border-b-2 ${
+                className={`hoverable px-3 py-2 text-xs font-mono font-semibold tracking-wider transition-all duration-300 relative group border-b-2 ${
                   currentPath === item.path
                     ? 'text-white border-white bg-gray-900'
                     : 'text-gray-400 hover:text-white border-transparent hover:border-gray-500 hover:bg-gray-900'
                 }`}
               >
-                <span className="mr-2 text-gray-600">[{item.step}]</span>
+                <span className="mr-1 text-gray-600">[{item.step}]</span>
                 {item.name}
                 
                 {/* Enhanced Tooltip */}
@@ -271,8 +261,8 @@ const Navigation = ({ user, onLogout, currentPath }) => {
           </div>
 
           {/* Desktop User Controls */}
-          <div className="hidden md:flex items-center space-x-4">
-            <span className="text-gray-300 text-sm font-mono">USER: {user.toUpperCase()}</span>
+          <div className="hidden md:flex items-center space-x-3">
+            <span className="text-gray-300 text-xs font-mono">USER: {user.toUpperCase()}</span>
             <button
               onClick={onLogout}
               className="hoverable bg-red-900 text-white px-4 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider rounded-md"
@@ -281,21 +271,24 @@ const Navigation = ({ user, onLogout, currentPath }) => {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <span className="text-gray-300 text-xs font-mono">USER: {user.toUpperCase()}</span>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="hoverable text-gray-400 hover:text-white p-2 rounded-md transition-colors duration-300"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+          {/* Mobile Header */}
+          <div className="md:hidden flex items-center justify-between w-full">
+            <span className="text-white text-sm font-mono font-bold">RELOCATE.SYS</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-300 text-xs font-mono">USER: {user.toUpperCase()}</span>
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="hoverable text-gray-400 hover:text-white p-2 rounded-md transition-colors duration-300"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         
