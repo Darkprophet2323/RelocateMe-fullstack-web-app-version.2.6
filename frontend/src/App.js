@@ -6,12 +6,11 @@ import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// Ink Blob Cursor Component for Noir Theme
-const InkBlobCursor = () => {
+// Spy Cursor Component for Noir Theme
+const SpyCursor = () => {
   const bigBallRef = useRef(null);
   const smallBallRef = useRef(null);
-  const [isWriting, setIsWriting] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const bigBall = bigBallRef.current;
@@ -20,125 +19,101 @@ const InkBlobCursor = () => {
     if (!bigBall || !smallBall) return;
 
     // Add custom cursor class to body
-    document.body.classList.add('custom-cursor-active');
+    document.body.classList.add('spy-cursor-active');
 
-    // Mouse move handler
+    // Mouse move handler using GSAP (TweenMax equivalent)
     const onMouseMove = (e) => {
       gsap.to(bigBall, {
         duration: 0.4,
-        x: e.clientX - 15,
-        y: e.clientY - 15,
+        x: e.pageX - 15,
+        y: e.pageY - 15,
         ease: "power2.out"
       });
       gsap.to(smallBall, {
         duration: 0.1,
-        x: e.clientX - 5,
-        y: e.clientY - 5,
+        x: e.pageX - 5,
+        y: e.pageY - 5,
         ease: "power2.out"
       });
     };
 
-    // Mouse down handler (clicking effect)
-    const onMouseDown = () => {
-      setIsClicking(true);
-      bigBall.classList.add('clicking');
-      smallBall.classList.add('clicking');
-      gsap.to(bigBall, {
-        duration: 0.1,
-        scale: 1.5,
-        ease: "power2.out"
-      });
-      gsap.to(smallBall, {
-        duration: 0.1,
-        scale: 1.8,
-        ease: "power2.out"
-      });
-    };
-
-    // Mouse up handler
-    const onMouseUp = () => {
-      setIsClicking(false);
-      bigBall.classList.remove('clicking');
-      smallBall.classList.remove('clicking');
-      gsap.to(bigBall, {
-        duration: 0.2,
-        scale: 1,
-        ease: "power2.out"
-      });
-      gsap.to(smallBall, {
-        duration: 0.2,
-        scale: 1,
-        ease: "power2.out"
-      });
-    };
-
-    // Hover handlers for different element types
+    // Hover handlers for spy effect
     const onMouseHover = (e) => {
       const element = e.target;
-      setIsWriting(true);
+      setIsHovering(true);
       
       if (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button') {
-        bigBall.classList.add('ink-writing', 'button-hover');
-        smallBall.classList.add('ink-writing');
         gsap.to(bigBall, {
           duration: 0.3,
-          scale: 2.2,
-          ease: "power2.out"
-        });
-      } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-        bigBall.classList.add('text-selecting');
-        smallBall.classList.add('text-selecting');
-        gsap.to(bigBall, {
-          duration: 0.3,
-          scale: 1.5,
-          rotation: 15,
+          scale: 5,
           ease: "power2.out"
         });
       } else if (element.tagName === 'A') {
-        bigBall.classList.add('ink-writing');
-        smallBall.classList.add('ink-writing');
         gsap.to(bigBall, {
           duration: 0.3,
-          scale: 1.8,
+          scale: 6,
+          ease: "power2.out"
+        });
+      } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+        gsap.to(bigBall, {
+          duration: 0.3,
+          scale: 3,
           ease: "power2.out"
         });
       } else {
-        bigBall.classList.add('ink-writing');
-        smallBall.classList.add('ink-writing');
         gsap.to(bigBall, {
           duration: 0.3,
-          scale: 2,
+          scale: 4,
           ease: "power2.out"
         });
       }
     };
 
     const onMouseHoverOut = () => {
-      setIsWriting(false);
-      bigBall.classList.remove('ink-writing', 'button-hover', 'text-selecting');
-      smallBall.classList.remove('ink-writing', 'text-selecting');
+      setIsHovering(false);
       gsap.to(bigBall, {
         duration: 0.3,
         scale: 1,
-        rotation: 0,
         ease: "power2.out"
       });
     };
 
-    // Add event listeners
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
+    // Click effect
+    const onMouseDown = () => {
+      gsap.to(bigBall, {
+        duration: 0.1,
+        scale: isHovering ? 8 : 2,
+        ease: "power2.out"
+      });
+      gsap.to(smallBall, {
+        duration: 0.1,
+        scale: 2,
+        ease: "power2.out"
+      });
+    };
+
+    const onMouseUp = () => {
+      gsap.to(bigBall, {
+        duration: 0.2,
+        scale: isHovering ? (bigBall.style.transform.includes('scale') ? parseFloat(bigBall.style.transform.split('scale(')[1]) : 4) : 1,
+        ease: "power2.out"
+      });
+      gsap.to(smallBall, {
+        duration: 0.2,
+        scale: 1,
+        ease: "power2.out"
+      });
+    };
 
     // Add hover listeners to interactive elements
     const addHoverListeners = () => {
       const hoverableElements = document.querySelectorAll('button, a, input, textarea, [role="button"], .hoverable, [data-testid], .clickable');
       hoverableElements.forEach(element => {
-        if (!element.hasAttribute('data-ink-cursor')) {
+        if (!element.hasAttribute('data-spy-cursor')) {
           element.addEventListener('mouseenter', onMouseHover);
           element.addEventListener('mouseleave', onMouseHoverOut);
           element.classList.add('hoverable');
-          element.setAttribute('data-ink-cursor', 'true');
+          element.setAttribute('data-spy-cursor', 'true');
         }
       });
     };
@@ -156,35 +131,43 @@ const InkBlobCursor = () => {
       subtree: true
     });
 
+    // Add event listeners
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+
     // Cleanup
     return () => {
-      document.body.classList.remove('custom-cursor-active');
+      document.body.classList.remove('spy-cursor-active');
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mouseup', onMouseUp);
       observer.disconnect();
       
-      // Remove listeners from all elements with data-ink-cursor
-      const elementsWithListeners = document.querySelectorAll('[data-ink-cursor]');
+      // Remove listeners from all elements with data-spy-cursor
+      const elementsWithListeners = document.querySelectorAll('[data-spy-cursor]');
       elementsWithListeners.forEach(element => {
         element.removeEventListener('mouseenter', onMouseHover);
         element.removeEventListener('mouseleave', onMouseHoverOut);
-        element.removeAttribute('data-ink-cursor');
+        element.removeAttribute('data-spy-cursor');
       });
     };
-  }, []);
+  }, [isHovering]);
 
   return (
-    <>
-      <div 
-        ref={bigBallRef}
-        className={`cursor__ball--big ${isWriting ? 'ink-writing' : ''} ${isClicking ? 'clicking' : ''}`}
-      />
-      <div 
-        ref={smallBallRef}
-        className={`cursor__ball--small ${isWriting ? 'ink-writing' : ''} ${isClicking ? 'clicking' : ''}`}
-      />
-    </>
+    <div className="spy-cursor">
+      <div ref={bigBallRef} className="cursor__ball cursor__ball--big">
+        <svg height="30" width="30">
+          <circle cx="15" cy="15" r="12" strokeWidth="0"></circle>
+        </svg>
+      </div>
+      
+      <div ref={smallBallRef} className="cursor__ball cursor__ball--small">
+        <svg height="10" width="10">
+          <circle cx="5" cy="5" r="4" strokeWidth="0"></circle>
+        </svg>
+      </div>
+    </div>
   );
 };
 
