@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
