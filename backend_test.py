@@ -1,22 +1,20 @@
 
 import requests
 import sys
-import os
 import json
 from datetime import datetime
 
 class RelocateMeAPITester:
-    def __init__(self, base_url):
+    def __init__(self, base_url="https://2cdbcfb0-eea9-4326-9b19-b06d91ee205b.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
         self.tests_passed = 0
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None):
         """Run a single API test"""
-        url = f"{self.base_url}/{endpoint}"
-        if not headers:
-            headers = {'Content-Type': 'application/json'}
+        url = f"{self.base_url}/api/{endpoint}"
+        headers = {'Content-Type': 'application/json'}
         if self.token:
             headers['Authorization'] = f'Bearer {self.token}'
 
@@ -53,12 +51,12 @@ class RelocateMeAPITester:
             print(f"❌ Failed - Error: {str(e)}")
             return False, {}
 
-    def test_login(self, username, password):
+    def test_login(self, username="relocate_user", password="SecurePass2025!"):
         """Test login and get token"""
         success, response = self.run_test(
-            "Login with noir-themed hacking credentials",
+            "Login",
             "POST",
-            "api/auth/login",
+            "auth/login",
             200,
             data={"username": username, "password": password}
         )
@@ -67,73 +65,86 @@ class RelocateMeAPITester:
             return True
         return False
 
-    def test_user_info(self):
-        """Test getting user info with token"""
-        success, response = self.run_test(
-            "Get user info with token",
+    def test_get_user_info(self):
+        """Test getting user info"""
+        return self.run_test(
+            "Get User Info",
             "GET",
-            "api/auth/me",
+            "auth/me",
             200
         )
-        return success
 
-    def test_timeline(self):
+    def test_get_timeline(self):
         """Test getting timeline data"""
-        success, response = self.run_test(
-            "Get timeline data",
+        return self.run_test(
+            "Get Timeline",
             "GET",
-            "api/timeline/full",
+            "timeline/full",
             200
         )
-        return success
 
-    def test_visa_requirements(self):
+    def test_get_progress_items(self):
+        """Test getting progress items"""
+        return self.run_test(
+            "Get Progress Items",
+            "GET",
+            "progress/items",
+            200
+        )
+
+    def test_get_visa_requirements(self):
         """Test getting visa requirements"""
-        success, response = self.run_test(
-            "Get visa requirements",
+        return self.run_test(
+            "Get Visa Requirements",
             "GET",
-            "api/visa/requirements",
+            "visa/requirements",
             200
         )
-        return success
 
-    def test_job_listings(self):
+    def test_get_job_listings(self):
         """Test getting job listings"""
-        success, response = self.run_test(
-            "Get job listings",
+        return self.run_test(
+            "Get Job Listings",
             "GET",
-            "api/jobs/listings",
+            "jobs/listings",
             200
         )
-        return success
+
+    def test_get_resources(self):
+        """Test getting resources"""
+        return self.run_test(
+            "Get Resources",
+            "GET",
+            "resources/all",
+            200
+        )
 
 def main():
-    # Get the backend URL from environment or use the one from frontend/.env
-    backend_url = "https://2cdbcfb0-eea9-4326-9b19-b06d91ee205b.preview.emergentagent.com"
-    
-    # Setup tester
-    tester = RelocateMeAPITester(backend_url)
-    
-    # Test credentials from the noir-themed hacking animation
-    username = "relocate_user"
-    password = "SecurePass2025!"
-
-    print(f"\n🔒 Testing Noir-Themed Hacking Animation Authentication API")
-    print(f"🌐 Backend URL: {backend_url}")
-    print(f"👤 Using credentials discovered in the hacking animation: {username}/{password}")
+    # Setup
+    tester = RelocateMeAPITester()
     
     # Run tests
-    if not tester.test_login(username, password):
-        print("❌ Login failed with the credentials from the noir-themed hacking animation")
+    if not tester.test_login():
+        print("❌ Login failed, stopping tests")
         return 1
 
-    print("✅ Successfully authenticated with the credentials from the noir-themed hacking animation")
+    # Test user info
+    tester.test_get_user_info()
     
-    # Test protected endpoints
-    tester.test_user_info()
-    tester.test_timeline()
-    tester.test_visa_requirements()
-    tester.test_job_listings()
+    # Test timeline
+    tester.test_get_timeline()
+    
+    # Test progress items
+    tester.test_get_progress_items()
+    
+    # Test visa requirements
+    tester.test_get_visa_requirements()
+    
+    # Test job listings
+    tester.test_get_job_listings()
+    
+    # Test resources
+    tester.test_get_resources()
 
     # Print results
     print(f"\n📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
