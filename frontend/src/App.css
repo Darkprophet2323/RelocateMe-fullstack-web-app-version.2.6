@@ -9,6 +9,12 @@
 
 .spy-cursor {
   pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
 }
 
 .spy-cursor .cursor__ball {
@@ -16,8 +22,9 @@
   top: 0;
   left: 0;
   mix-blend-mode: difference;
-  z-index: 1000;
+  z-index: 10000;
   pointer-events: none;
+  border-radius: 50%;
 }
 
 .spy-cursor .cursor__ball--big {
@@ -30,15 +37,24 @@
   height: 10px;
 }
 
+.spy-cursor .cursor__ball svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .spy-cursor .cursor__ball svg circle {
   fill: #f7f8fa;
   transition: all 0.3s ease;
 }
 
 /* Enhanced spy effects for different interactions */
-.spy-cursor .cursor__ball--big:hover svg circle {
-  fill: #ffffff;
-  filter: drop-shadow(0 0 10px rgba(247, 248, 250, 0.8));
+.spy-cursor .cursor__ball--big svg circle {
+  animation: spy-glow 2s ease-in-out infinite;
+}
+
+.spy-cursor .cursor__ball--small svg circle {
+  animation: spy-scan 1.5s ease-in-out infinite;
 }
 
 /* Special spy glowing effect for links */
@@ -108,10 +124,6 @@ textarea.hoverable:hover {
   }
 }
 
-.spy-cursor .cursor__ball--big svg circle {
-  animation: spy-glow 2s ease-in-out infinite;
-}
-
 /* Spy scanning effect */
 @keyframes spy-scan {
   0% {
@@ -126,10 +138,6 @@ textarea.hoverable:hover {
     transform: scale(1);
     opacity: 1;
   }
-}
-
-.spy-cursor .cursor__ball--small svg circle {
-  animation: spy-scan 1.5s ease-in-out infinite;
 }
 
 /* Pulsing effect on click */
