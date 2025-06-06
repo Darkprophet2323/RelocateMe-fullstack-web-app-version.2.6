@@ -1,7 +1,9 @@
+
 import requests
 import sys
+import os
 import json
-import time
+from datetime import datetime
 
 class RelocateMeAPITester:
     def __init__(self, base_url):
@@ -54,7 +56,7 @@ class RelocateMeAPITester:
     def test_login(self, username, password):
         """Test login and get token"""
         success, response = self.run_test(
-            "Login with hacked credentials",
+            "Login with noir-themed hacking credentials",
             "POST",
             "api/auth/login",
             200,
@@ -67,12 +69,8 @@ class RelocateMeAPITester:
 
     def test_user_info(self):
         """Test getting user info with token"""
-        if not self.token:
-            print("❌ No token available, skipping user info test")
-            return False
-        
         success, response = self.run_test(
-            "Get user info",
+            "Get user info with token",
             "GET",
             "api/auth/me",
             200
@@ -81,10 +79,6 @@ class RelocateMeAPITester:
 
     def test_timeline(self):
         """Test getting timeline data"""
-        if not self.token:
-            print("❌ No token available, skipping timeline test")
-            return False
-        
         success, response = self.run_test(
             "Get timeline data",
             "GET",
@@ -93,44 +87,54 @@ class RelocateMeAPITester:
         )
         return success
 
+    def test_visa_requirements(self):
+        """Test getting visa requirements"""
+        success, response = self.run_test(
+            "Get visa requirements",
+            "GET",
+            "api/visa/requirements",
+            200
+        )
+        return success
+
+    def test_job_listings(self):
+        """Test getting job listings"""
+        success, response = self.run_test(
+            "Get job listings",
+            "GET",
+            "api/jobs/listings",
+            200
+        )
+        return success
+
 def main():
-    # Get the backend URL from the command line or use default
-    if len(sys.argv) > 1:
-        base_url = sys.argv[1]
-    else:
-        base_url = "https://2cdbcfb0-eea9-4326-9b19-b06d91ee205b.preview.emergentagent.com"
-    
-    print(f"Testing API at: {base_url}")
+    # Get the backend URL from environment or use the one from frontend/.env
+    backend_url = "https://2cdbcfb0-eea9-4326-9b19-b06d91ee205b.preview.emergentagent.com"
     
     # Setup tester
-    tester = RelocateMeAPITester(base_url)
+    tester = RelocateMeAPITester(backend_url)
     
-    # Test login with the "hacked" credentials from the login animation
+    # Test credentials from the noir-themed hacking animation
     username = "relocate_user"
     password = "SecurePass2025!"
+
+    print(f"\n🔒 Testing Noir-Themed Hacking Animation Authentication API")
+    print(f"🌐 Backend URL: {backend_url}")
+    print(f"👤 Using credentials discovered in the hacking animation: {username}/{password}")
     
-    print(f"\n🔐 Testing login with credentials discovered in the hacking animation:")
-    print(f"   Username: {username}")
-    print(f"   Password: {password}")
-    
+    # Run tests
     if not tester.test_login(username, password):
-        print("❌ Login failed, stopping tests")
+        print("❌ Login failed with the credentials from the noir-themed hacking animation")
         return 1
+
+    print("✅ Successfully authenticated with the credentials from the noir-themed hacking animation")
     
-    print("✅ Login successful! Token received.")
-    
-    # Test getting user info
-    if not tester.test_user_info():
-        print("❌ Getting user info failed")
-    else:
-        print("✅ Successfully retrieved user info")
-    
-    # Test getting timeline data
-    if not tester.test_timeline():
-        print("❌ Getting timeline data failed")
-    else:
-        print("✅ Successfully retrieved timeline data")
-    
+    # Test protected endpoints
+    tester.test_user_info()
+    tester.test_timeline()
+    tester.test_visa_requirements()
+    tester.test_job_listings()
+
     # Print results
     print(f"\n📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
     return 0 if tester.tests_passed == tester.tests_run else 1
