@@ -1959,18 +1959,18 @@ const LoginPage = () => {
   if (currentPhase === 'initial') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
-        {/* Matrix-style background */}
-        <div className="matrix-rain absolute inset-0 opacity-20"></div>
+        {/* Film noir background with subtle texture */}
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-gray-900 via-black to-gray-800"></div>
         
-        <div className="max-w-2xl w-full bg-black border-2 border-green-500 p-8 shadow-2xl relative z-10">
+        <div className="max-w-2xl w-full bg-black border-2 border-white p-8 shadow-2xl relative z-10">
           <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-green-400 mb-4 font-mono glitch-text">
+            <h1 className="text-5xl font-bold text-white mb-4 font-serif noir-title">
               RELOCATE.SYS
             </h1>
-            <p className="text-green-300 font-mono text-lg tracking-wider">
+            <p className="text-gray-300 font-mono text-lg tracking-wider">
               [ UNAUTHORIZED ACCESS DETECTED ]
             </p>
-            <p className="text-gray-400 font-mono text-sm mt-2">
+            <p className="text-gray-500 font-mono text-sm mt-2">
               SECURITY BREACH IMMINENT - INITIATE COUNTERMEASURES
             </p>
           </div>
@@ -1984,11 +1984,11 @@ const LoginPage = () => {
           <div className="text-center">
             <button
               onClick={startHackingAnimation}
-              className="bg-green-500 text-black px-8 py-4 font-mono font-bold text-xl tracking-wider hover:bg-green-400 transition-all duration-300 border-2 border-green-300 shadow-lg hover:shadow-green-500/50 animate-pulse"
+              className="bg-white text-black px-8 py-4 font-mono font-bold text-xl tracking-wider hover:bg-gray-200 transition-all duration-300 border-2 border-gray-300 shadow-lg hover:shadow-white/50"
             >
               [ INITIATE SYSTEM BREACH ]
             </button>
-            <p className="text-green-400 font-mono text-xs mt-4 opacity-75">
+            <p className="text-gray-400 font-mono text-xs mt-4 opacity-75">
               WARNING: Unauthorized access is illegal
             </p>
           </div>
