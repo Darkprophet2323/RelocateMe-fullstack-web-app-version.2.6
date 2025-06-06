@@ -2125,9 +2125,13 @@ const App = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUsername = localStorage.getItem("username");
+    console.log("Checking login status:", { token: !!token, username: storedUsername });
     if (token && storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
+      console.log("User is logged in, showing main app");
+    } else {
+      console.log("User is not logged in, showing login animation");
     }
   }, []);
 
