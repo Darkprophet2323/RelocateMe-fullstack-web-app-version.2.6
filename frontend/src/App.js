@@ -349,7 +349,7 @@ const DashboardPage = () => {
     { name: "PEAK DISTRICT HQ", url: "https://www.peakdistrict.gov.uk", description: "Target region intel" },
     { name: "NHS REGISTRATION", url: "https://www.nhs.uk/using-the-nhs/nhs-services/gps/how-to-register-with-a-gp-practice/", description: "Medical system access" },
     { 
-      name: "~ Mission Debrief: Mission Console ~", 
+      name: "Mission Debrief: Mission Console", 
       url: "https://os-theme-verify.emergent.host/", 
       description: "OS Noir Command Interface", 
       special: true 
