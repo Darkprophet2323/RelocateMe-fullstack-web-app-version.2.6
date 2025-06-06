@@ -23,28 +23,125 @@
   fill: #f7f8fa;
 }
 
+/* NOIR THEME BUTTON STYLES */
+button, 
+input[type="submit"], 
+input[type="button"], 
+.button {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  padding: 12px 24px !important;
+  font-family: monospace !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  transition: all 0.3s ease !important;
+  cursor: none !important;
+  border-radius: 0 !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+button:hover, 
+input[type="submit"]:hover, 
+input[type="button"]:hover, 
+.button:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  transform: translate(-1px, -1px) !important;
+}
+
+button:active, 
+input[type="submit"]:active, 
+input[type="button"]:active, 
+.button:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 0px 0px 0px #000000 !important;
+}
+
+/* Special button variants */
+.logout-button {
+  background: #000000 !important;
+  color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+  box-shadow: 2px 2px 0px #ff0000 !important;
+}
+
+.logout-button:hover {
+  background: #ff0000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+.primary-button {
+  background: #000000 !important;
+  color: #00ff00 !important;
+  border: 2px solid #00ff00 !important;
+  box-shadow: 2px 2px 0px #00ff00 !important;
+}
+
+.primary-button:hover {
+  background: #00ff00 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
 /* Hoverable link styling from example */
-a.hoverable {
+a.hoverable, a {
   border-bottom: 2px solid #fff;
   padding: 10px 0;
   margin-top: 25px;
   color: #fff !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
 }
 
-/* Mobile animations and responsiveness */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+a.hoverable:hover, a:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 12px 8px !important;
+  border-bottom: 2px solid #000000 !important;
 }
 
-.animate-slideDown {
-  animation: slideDown 0.3s ease-out;
+/* Input field styling */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"], 
+textarea, 
+select {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  padding: 12px !important;
+  font-family: monospace !important;
+  transition: all 0.3s ease !important;
+  cursor: none !important;
+  border-radius: 0 !important;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus, 
+input[type="number"]:focus, 
+textarea:focus, 
+select:focus {
+  outline: none !important;
+  border: 2px solid #00ff00 !important;
+  box-shadow: 0 0 0 2px #00ff00 !important;
+}
+
+input[type="text"]:hover, 
+input[type="email"]:hover, 
+input[type="password"]:hover, 
+input[type="number"]:hover, 
+textarea:hover, 
+select:hover {
+  border: 2px solid #cccccc !important;
 }
 
 /* Enhanced mobile responsiveness */
@@ -89,6 +186,11 @@ a.hoverable {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+  }
+  
+  /* Restore normal cursors on mobile */
+  button, input, textarea, select, a {
+    cursor: pointer !important;
   }
 }
 
