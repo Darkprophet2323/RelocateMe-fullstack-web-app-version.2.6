@@ -494,8 +494,8 @@ const DashboardPage = () => {
                     window.open(link.url, '_blank', 'noopener,noreferrer');
                   }
                 }}
-                className={`bg-black border border-gray-600 p-6 hover:border-white hover:bg-gray-900 transition-all duration-300 group block ${
-                  link.special ? 'border-red-600 bg-red-900 hover:bg-red-800' : ''
+                className={`hoverable bg-black border border-gray-600 p-6 hover:border-white hover:bg-gray-900 transition-all duration-300 group block ${
+                  link.special ? 'bg-red-900 border-red-700 hover:bg-red-800 text-black' : ''
                 }`}
               >
                 <h3 className={`font-bold mb-3 font-mono tracking-wide group-hover:text-gray-200 ${
