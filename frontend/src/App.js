@@ -1805,6 +1805,7 @@ const LoginPage = () => {
   const [loginUsername, setLoginUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [animationTimeoutId, setAnimationTimeoutId] = useState(null);
 
   const hackingCommands = [
     "root@relocation-system:~# nmap -sS 192.168.1.1",
