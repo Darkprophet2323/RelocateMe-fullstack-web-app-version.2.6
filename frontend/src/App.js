@@ -976,7 +976,7 @@ const VisaPage = () => {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Object.entries(selectedVisa.required_documents).map(([category, documents], categoryIndex) => {
+            {selectedVisa.required_documents && Object.entries(selectedVisa.required_documents).map(([category, documents], categoryIndex) => {
               const colors = [
                 'border-l-white bg-gray-900',
                 'border-l-gray-400 bg-gray-900',
