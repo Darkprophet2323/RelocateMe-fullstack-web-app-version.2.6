@@ -2332,7 +2332,7 @@ const App = () => {
 
     return (
       <>
-        <InkBlobCursor />
+        <SpyCursor />
         <Navigation user={username} onLogout={handleLogout} currentPath={currentPath} />
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
