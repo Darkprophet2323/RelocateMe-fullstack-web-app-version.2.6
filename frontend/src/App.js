@@ -215,8 +215,10 @@ const ProgressWizard = ({ currentStep, totalSteps, completedSteps }) => {
   );
 };
 
-// Navigation Component with Noir Theme
+// Navigation Component with Enhanced Mobile Support
 const Navigation = ({ user, onLogout, currentPath }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { path: "/dashboard", name: "DASHBOARD", step: 1, description: "MISSION CONTROL" },
     { path: "/timeline", name: "TIMELINE", step: 2, description: "OPERATIONAL SCHEDULE" },
@@ -234,7 +236,7 @@ const Navigation = ({ user, onLogout, currentPath }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/dashboard" className="flex items-center group">
+            <Link to="/dashboard" className="flex items-center group hoverable">
               <span className="text-2xl font-bold font-serif text-white tracking-tight group-hover:text-gray-300 transition-colors duration-300">
                 RELOCATE
               </span>
@@ -244,12 +246,13 @@ const Navigation = ({ user, onLogout, currentPath }) => {
             </Link>
           </div>
           
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 text-xs font-mono font-semibold tracking-wider transition-all duration-300 relative group border-b-2 ${
+                className={`hoverable px-4 py-2 text-xs font-mono font-semibold tracking-wider transition-all duration-300 relative group border-b-2 ${
                   currentPath === item.path
                     ? 'text-white border-white bg-gray-900'
                     : 'text-gray-400 hover:text-white border-transparent hover:border-gray-500 hover:bg-gray-900'
@@ -258,8 +261,8 @@ const Navigation = ({ user, onLogout, currentPath }) => {
                 <span className="mr-2 text-gray-600">[{item.step}]</span>
                 {item.name}
                 
-                {/* Tooltip */}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-black border border-gray-600 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 font-mono">
+                {/* Enhanced Tooltip */}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-black border border-gray-600 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 font-mono rounded-md">
                   {item.description}
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-black"></div>
                 </div>
@@ -267,36 +270,65 @@ const Navigation = ({ user, onLogout, currentPath }) => {
             ))}
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Desktop User Controls */}
+          <div className="hidden md:flex items-center space-x-4">
             <span className="text-gray-300 text-sm font-mono">USER: {user.toUpperCase()}</span>
             <button
               onClick={onLogout}
-              className="bg-red-900 text-white px-4 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider"
+              className="hoverable bg-red-900 text-white px-4 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider rounded-md"
             >
               [LOGOUT]
             </button>
           </div>
-        </div>
-        
-        {/* Mobile Navigation */}
-        <div className="md:hidden pb-3">
-          <div className="grid grid-cols-3 gap-1">
-            {navItems.map(item => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`text-center py-2 px-1 text-xs font-mono border ${
-                  currentPath === item.path
-                    ? 'bg-white text-black border-white'
-                    : 'text-gray-400 border-gray-600 hover:text-white hover:border-gray-400'
-                }`}
-              >
-                <div className="font-bold">[{item.step}]</div>
-                <div>{item.name}</div>
-              </Link>
-            ))}
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center space-x-2">
+            <span className="text-gray-300 text-xs font-mono">USER: {user.toUpperCase()}</span>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="hoverable text-gray-400 hover:text-white p-2 rounded-md transition-colors duration-300"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+        
+        {/* Enhanced Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden pb-3 animate-slideDown">
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              {navItems.map(item => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`hoverable text-center py-3 px-2 text-xs font-mono border rounded-md transition-all duration-300 ${
+                    currentPath === item.path
+                      ? 'bg-white text-black border-white'
+                      : 'bg-gray-900 text-gray-300 border-gray-600 hover:bg-gray-800 hover:border-gray-400 hover:text-white'
+                  }`}
+                >
+                  <div className="font-semibold">[{item.step}] {item.name}</div>
+                  <div className="text-xs opacity-75 mt-1">{item.description}</div>
+                </Link>
+              ))}
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={onLogout}
+                className="hoverable bg-red-900 text-white px-6 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider rounded-md"
+              >
+                [LOGOUT]
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
