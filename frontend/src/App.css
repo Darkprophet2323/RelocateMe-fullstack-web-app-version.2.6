@@ -301,6 +301,21 @@ nav {
 
 /* NOIR HACKING ANIMATION STYLES */
 
+/* Mission Debrief button specific styling */
+.mission-debrief-button,
+a.bg-red-900 {
+  background-color: #800020 !important; /* Burgundy color */
+  color: #000000 !important; /* Black text */
+  border: 2px solid #000000 !important;
+}
+
+.mission-debrief-button:hover,
+a.bg-red-900:hover {
+  background-color: #a0002a !important; /* Lighter burgundy on hover */
+  color: #000000 !important; /* Keep black text */
+  border: 2px solid #000000 !important;
+}
+
 /* FINAL BUTTON OVERRIDE - HIGHEST SPECIFICITY */
 * button,
 * input[type="submit"],
