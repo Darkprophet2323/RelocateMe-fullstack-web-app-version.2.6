@@ -1999,19 +1999,19 @@ const LoginPage = () => {
 
   if (currentPhase === 'hacking' || currentPhase === 'backdoor') {
     return (
-      <div className="min-h-screen bg-black p-4 font-mono text-green-400 overflow-hidden">
+      <div className="min-h-screen bg-black p-4 font-mono text-white overflow-hidden">
         <div className="max-w-6xl mx-auto relative">
-          <div className="border-2 border-green-500 bg-black p-6 h-screen overflow-y-auto">
+          <div className="border-2 border-white bg-black p-6 h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
-                <span className="text-green-300 text-sm">BREACH_TERMINAL_v2.5.0</span>
+                <div className="w-3 h-3 bg-gray-400 rounded-full mr-4"></div>
+                <span className="text-gray-300 text-sm">BREACH_TERMINAL_v2.5.0</span>
               </div>
               <button
                 onClick={skipAnimation}
-                className="text-green-400 border border-green-400 px-3 py-1 text-xs hover:bg-green-400 hover:text-black transition-all duration-300"
+                className="text-white border border-gray-500 px-3 py-1 text-xs hover:bg-white hover:text-black transition-all duration-300"
               >
                 SKIP ANIMATION
               </button>
@@ -2020,18 +2020,18 @@ const LoginPage = () => {
             <div className="space-y-1">
               {terminalLines.map((line, index) => (
                 <div key={index} className="flex">
-                  <span className="text-green-500 mr-2">$</span>
-                  <span className={line.includes('SUCCESS') || line.includes('GRANTED') ? 'text-green-300 font-bold' : 
+                  <span className="text-gray-400 mr-2">$</span>
+                  <span className={line.includes('SUCCESS') || line.includes('GRANTED') ? 'text-white font-bold' : 
                                 line.includes('ERROR') || line.includes('FAILED') ? 'text-red-400' :
-                                line.includes('Valid credentials') || line.includes('Backdoor') ? 'text-yellow-400' : ''}
+                                line.includes('Valid credentials') || line.includes('Backdoor') || line.includes('SecurePass2025!') ? 'text-red-300' : 'text-gray-300'}
                   >
                     {line}
                   </span>
                 </div>
               ))}
               <div className="flex">
-                <span className="text-green-500 mr-2">$</span>
-                <span className="animate-pulse">█</span>
+                <span className="text-gray-400 mr-2">$</span>
+                <span className="animate-pulse text-white">█</span>
               </div>
             </div>
           </div>
