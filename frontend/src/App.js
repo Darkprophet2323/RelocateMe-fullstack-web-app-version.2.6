@@ -21,18 +21,25 @@ const SpyCursor = () => {
     // Add custom cursor class to body
     document.body.classList.add('spy-cursor-active');
 
+    // Initialize cursor position at center of screen
+    const initX = window.innerWidth / 2;
+    const initY = window.innerHeight / 2;
+    
+    gsap.set(bigBall, { x: initX - 15, y: initY - 15 });
+    gsap.set(smallBall, { x: initX - 5, y: initY - 5 });
+
     // Mouse move handler using GSAP (TweenMax equivalent)
     const onMouseMove = (e) => {
       gsap.to(bigBall, {
         duration: 0.4,
-        x: e.pageX - 15,
-        y: e.pageY - 15,
+        x: e.clientX - 15,
+        y: e.clientY - 15,
         ease: "power2.out"
       });
       gsap.to(smallBall, {
         duration: 0.1,
-        x: e.pageX - 5,
-        y: e.pageY - 5,
+        x: e.clientX - 5,
+        y: e.clientY - 5,
         ease: "power2.out"
       });
     };
@@ -95,7 +102,7 @@ const SpyCursor = () => {
     const onMouseUp = () => {
       gsap.to(bigBall, {
         duration: 0.2,
-        scale: isHovering ? (bigBall.style.transform.includes('scale') ? parseFloat(bigBall.style.transform.split('scale(')[1]) : 4) : 1,
+        scale: isHovering ? 4 : 1,
         ease: "power2.out"
       });
       gsap.to(smallBall, {
@@ -156,15 +163,15 @@ const SpyCursor = () => {
 
   return (
     <div className="spy-cursor">
-      <div ref={bigBallRef} className="cursor__ball cursor__ball--big">
-        <svg height="30" width="30">
-          <circle cx="15" cy="15" r="12" strokeWidth="0"></circle>
+      <div ref={bigBallRef} className="cursor__ball cursor__ball--big" style={{ position: 'fixed', zIndex: 10000 }}>
+        <svg height="30" width="30" style={{ display: 'block', width: '100%', height: '100%' }}>
+          <circle cx="15" cy="15" r="12" strokeWidth="0" fill="#f7f8fa"></circle>
         </svg>
       </div>
       
-      <div ref={smallBallRef} className="cursor__ball cursor__ball--small">
-        <svg height="10" width="10">
-          <circle cx="5" cy="5" r="4" strokeWidth="0"></circle>
+      <div ref={smallBallRef} className="cursor__ball cursor__ball--small" style={{ position: 'fixed', zIndex: 10000 }}>
+        <svg height="10" width="10" style={{ display: 'block', width: '100%', height: '100%' }}>
+          <circle cx="5" cy="5" r="4" strokeWidth="0" fill="#f7f8fa"></circle>
         </svg>
       </div>
     </div>
