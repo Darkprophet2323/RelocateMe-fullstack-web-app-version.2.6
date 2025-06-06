@@ -952,7 +952,7 @@ const VisaPage = () => {
               OPERATION SEQUENCE
             </h2>
             <div className="space-y-6">
-              {selectedVisa.application_process.map((step, index) => (
+              {selectedVisa.application_process && selectedVisa.application_process.map((step, index) => (
                 <div key={index} className="flex items-start">
                   <div className="flex-shrink-0 w-10 h-10 bg-white text-black border-2 border-white flex items-center justify-center font-bold text-sm mr-4 font-mono">
                     {String(index + 1).padStart(2, '0')}
