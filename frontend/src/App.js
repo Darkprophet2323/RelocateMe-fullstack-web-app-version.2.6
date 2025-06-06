@@ -2064,38 +2064,38 @@ const LoginPage = () => {
   if (showForm || currentPhase === 'authenticating') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-gray-900 border-2 border-green-500 p-8 shadow-2xl">
+        <div className="max-w-md w-full bg-gray-900 border-2 border-white p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="text-4xl text-green-400 mb-4">🔓</div>
-            <h1 className="text-3xl font-bold text-green-400 mb-2 font-mono">BACKDOOR ACTIVE</h1>
-            <p className="text-green-300 font-mono text-sm">Using compromised credentials</p>
+            <div className="text-4xl text-white mb-4">🔓</div>
+            <h1 className="text-3xl font-bold text-white mb-2 font-mono">BACKDOOR ACTIVE</h1>
+            <p className="text-gray-300 font-mono text-sm">Using compromised credentials</p>
           </div>
 
           <form onSubmit={handleRealLogin}>
             <div className="mb-6">
-              <label className="block text-green-400 mb-2 font-mono text-sm tracking-wider">EXTRACTED USERNAME</label>
+              <label className="block text-gray-300 mb-2 font-mono text-sm tracking-wider">EXTRACTED USERNAME</label>
               <input
                 type="text"
                 value="relocate_user"
                 disabled
-                className="w-full bg-black border-2 border-green-500 p-3 text-green-400 font-mono opacity-75"
+                className="w-full bg-black border-2 border-gray-500 p-3 text-white font-mono opacity-75"
               />
             </div>
 
             <div className="mb-8">
-              <label className="block text-green-400 mb-2 font-mono text-sm tracking-wider">CRACKED PASSWORD</label>
+              <label className="block text-gray-300 mb-2 font-mono text-sm tracking-wider">CRACKED PASSWORD</label>
               <input
                 type="password"
                 value="SecurePass2025!"
                 disabled
-                className="w-full bg-black border-2 border-green-500 p-3 text-green-400 font-mono opacity-75"
+                className="w-full bg-black border-2 border-gray-500 p-3 text-red-300 font-mono opacity-75"
               />
             </div>
 
             <button
               type="submit"
               disabled={currentPhase === 'authenticating'}
-              className="w-full bg-green-500 text-black py-3 font-mono font-bold tracking-wider hover:bg-green-400 transition-all duration-300 disabled:opacity-50"
+              className="w-full bg-white text-black py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
             >
               {currentPhase === 'authenticating' ? "EXECUTING BACKDOOR..." : "AUTHENTICATE WITH BACKDOOR"}
             </button>
@@ -2105,7 +2105,7 @@ const LoginPage = () => {
             <p className="text-gray-500 font-mono text-xs">
               ⚠️ UNAUTHORIZED ACCESS DETECTED ⚠️
             </p>
-            <p className="text-green-400 font-mono text-xs mt-1">
+            <p className="text-red-300 font-mono text-xs mt-1">
               RELOCATE.SYS COMPROMISED
             </p>
           </div>
