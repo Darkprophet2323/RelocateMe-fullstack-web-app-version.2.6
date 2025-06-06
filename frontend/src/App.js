@@ -6,6 +6,135 @@ import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+// Ink Blob Cursor Component for Noir Theme
+const InkBlobCursor = () => {
+  const bigBallRef = useRef(null);
+  const smallBallRef = useRef(null);
+  const [isWriting, setIsWriting] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
+
+  useEffect(() => {
+    const bigBall = bigBallRef.current;
+    const smallBall = smallBallRef.current;
+
+    if (!bigBall || !smallBall) return;
+
+    // Add custom cursor class to body
+    document.body.classList.add('custom-cursor-active');
+
+    // Mouse move handler
+    const onMouseMove = (e) => {
+      gsap.to(bigBall, {
+        duration: 0.4,
+        x: e.clientX - 15,
+        y: e.clientY - 15,
+        ease: "power2.out"
+      });
+      gsap.to(smallBall, {
+        duration: 0.1,
+        x: e.clientX - 5,
+        y: e.clientY - 5,
+        ease: "power2.out"
+      });
+    };
+
+    // Mouse down handler (clicking effect)
+    const onMouseDown = () => {
+      setIsClicking(true);
+      bigBall.classList.add('clicking');
+      smallBall.classList.add('clicking');
+      gsap.to(bigBall, {
+        duration: 0.1,
+        scale: 1.5,
+        ease: "power2.out"
+      });
+      gsap.to(smallBall, {
+        duration: 0.1,
+        scale: 1.8,
+        ease: "power2.out"
+      });
+    };
+
+    // Mouse up handler
+    const onMouseUp = () => {
+      setIsClicking(false);
+      bigBall.classList.remove('clicking');
+      smallBall.classList.remove('clicking');
+      gsap.to(bigBall, {
+        duration: 0.2,
+        scale: 1,
+        ease: "power2.out"
+      });
+      gsap.to(smallBall, {
+        duration: 0.2,
+        scale: 1,
+        ease: "power2.out"
+      });
+    };
+
+    // Hover handlers for hoverable elements
+    const onMouseHover = () => {
+      setIsWriting(true);
+      bigBall.classList.add('ink-writing');
+      smallBall.classList.add('ink-writing');
+      gsap.to(bigBall, {
+        duration: 0.3,
+        scale: 2,
+        ease: "power2.out"
+      });
+    };
+
+    const onMouseHoverOut = () => {
+      setIsWriting(false);
+      bigBall.classList.remove('ink-writing');
+      smallBall.classList.remove('ink-writing');
+      gsap.to(bigBall, {
+        duration: 0.3,
+        scale: 1,
+        ease: "power2.out"
+      });
+    };
+
+    // Add event listeners
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+
+    // Add hover listeners to interactive elements
+    const hoverableElements = document.querySelectorAll('button, a, input, textarea, [role="button"], .hoverable');
+    hoverableElements.forEach(element => {
+      element.addEventListener('mouseenter', onMouseHover);
+      element.addEventListener('mouseleave', onMouseHoverOut);
+      element.classList.add('hoverable');
+    });
+
+    // Cleanup
+    return () => {
+      document.body.classList.remove('custom-cursor-active');
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      hoverableElements.forEach(element => {
+        element.removeEventListener('mouseenter', onMouseHover);
+        element.removeEventListener('mouseleave', onMouseHoverOut);
+      });
+    };
+  }, []);
+
+  return (
+    <>
+      <div 
+        ref={bigBallRef}
+        className={`cursor__ball--big ${isWriting ? 'ink-writing' : ''} ${isClicking ? 'clicking' : ''}`}
+      />
+      <div 
+        ref={smallBallRef}
+        className={`cursor__ball--small ${isWriting ? 'ink-writing' : ''} ${isClicking ? 'clicking' : ''}`}
+      />
+    </>
+  );
+};
+
 // Enhanced Progress Wizard Component with Noir Theme
 const ProgressWizard = ({ currentStep, totalSteps, completedSteps }) => {
   const progressPercentage = (completedSteps / totalSteps) * 100;
