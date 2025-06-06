@@ -1796,91 +1796,288 @@ const ResourcesPage = () => {
   );
 };
 
-// Login Component
+// Hacking Animation Login Component
 const LoginPage = () => {
+  const [currentPhase, setCurrentPhase] = useState('initial'); // initial, hacking, backdoor, authenticating, success
+  const [terminalLines, setTerminalLines] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const hackingCommands = [
+    "root@relocation-system:~# nmap -sS 192.168.1.1",
+    "Starting Nmap scan...",
+    "Host is up (0.023s latency)",
+    "PORT     STATE SERVICE",
+    "22/tcp   open  ssh",
+    "443/tcp  open  https",
+    "8001/tcp open  unknown",
+    "",
+    "root@relocation-system:~# hydra -l admin -P wordlist.txt ssh://192.168.1.1",
+    "Hydra v9.4 starting...",
+    "[SSH] host: 192.168.1.1   login: admin   password: relocate2025",
+    "[SSH] Valid credentials found!",
+    "",
+    "root@relocation-system:~# ssh admin@192.168.1.1",
+    "Welcome to RelocateMe Secure Terminal",
+    "Last login: Thu Jun  6 02:15:42 2025 from 10.0.0.1",
+    "",
+    "admin@relocate-server:~$ sudo -l",
+    "User admin may run the following commands:",
+    "    (ALL : ALL) ALL",
+    "",
+    "admin@relocate-server:~$ cat /etc/shadow | grep relocate_user",
+    "relocate_user:$6$salt$hash:19834:0:99999:7:::",
+    "",
+    "admin@relocate-server:~$ john --wordlist=passwords.txt shadow.txt",
+    "John the Ripper 1.9.0-jumbo-1",
+    "Loaded 1 password hash",
+    "Press 'q' or Ctrl-C to abort...",
+    "SecurePass2025!  (relocate_user)",
+    "",
+    "admin@relocate-server:~$ echo 'Backdoor installed successfully'",
+    "Backdoor installed successfully",
+    "",
+    "admin@relocate-server:~$ ./backdoor_auth.sh",
+    "Initializing backdoor authentication...",
+    "Bypassing security protocols...",
+    "Injecting authentication tokens...",
+    "AUTHENTICATION BYPASS: SUCCESS",
+    "",
+    "ACCESS GRANTED - WELCOME TO RELOCATE SYSTEM"
+  ];
+
+  const typewriterEffect = (lines, callback) => {
+    let currentLineIndex = 0;
+    let currentCharIndex = 0;
+    const currentTerminalLines = [];
+
+    const typeNextChar = () => {
+      if (currentLineIndex >= lines.length) {
+        callback();
+        return;
+      }
+
+      const currentLine = lines[currentLineIndex];
+      
+      if (currentCharIndex >= currentLine.length) {
+        currentTerminalLines.push(currentLine);
+        setTerminalLines([...currentTerminalLines]);
+        currentLineIndex++;
+        currentCharIndex = 0;
+        setTimeout(typeNextChar, 100 + Math.random() * 200);
+      } else {
+        const partialLine = currentLine.substring(0, currentCharIndex + 1);
+        const displayLines = [...currentTerminalLines, partialLine];
+        setTerminalLines(displayLines);
+        currentCharIndex++;
+        setTimeout(typeNextChar, 20 + Math.random() * 80);
+      }
+    };
+
+    typeNextChar();
+  };
+
+  const startHackingAnimation = () => {
+    setIsAnimating(true);
+    setCurrentPhase('hacking');
+    setTerminalLines([]);
+    
+    typewriterEffect(hackingCommands, () => {
+      setTimeout(() => {
+        setCurrentPhase('success');
+        setTimeout(() => {
+          setShowForm(true);
+        }, 2000);
+      }, 1000);
+    });
+  };
+
+  const handleRealLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    setCurrentPhase('authenticating');
+
+    // Use the credentials that were "discovered" by the hack
+    const hackUsername = "relocate_user";
+    const hackPassword = "SecurePass2025!";
 
     try {
       const response = await axios.post(`${API}/api/auth/login`, {
-        username: loginUsername,
-        password: password
+        username: hackUsername,
+        password: hackPassword
       });
 
       if (response.data && response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
-        localStorage.setItem("username", loginUsername);
-        window.location.reload();
+        localStorage.setItem("username", hackUsername);
+        setCurrentPhase('success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
-        setError("Invalid response from server");
+        setError("Authentication failed");
+        setCurrentPhase('initial');
+        setShowForm(false);
       }
     } catch (err) {
-      setError("Invalid username or password");
+      setError("System breach unsuccessful");
       console.error("Login error:", err);
-    } finally {
-      setIsLoading(false);
+      setCurrentPhase('initial');
+      setShowForm(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-gray-900 border border-gray-700 p-8 shadow-lg">
-        <h1 className="text-4xl font-bold text-white mb-6 font-serif text-center">RELOCATE ME</h1>
-        <p className="text-gray-400 mb-8 text-center font-mono">[ SECURE ACCESS TERMINAL ]</p>
-
-        {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 p-4 mb-6 font-mono text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label className="block text-gray-400 mb-2 font-mono text-sm tracking-wider">USERNAME</label>
-            <input
-              type="text"
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
-              className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
-              required
-            />
+  if (currentPhase === 'initial') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Matrix-style background */}
+        <div className="matrix-rain absolute inset-0 opacity-20"></div>
+        
+        <div className="max-w-2xl w-full bg-black border-2 border-green-500 p-8 shadow-2xl relative z-10">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold text-green-400 mb-4 font-mono glitch-text">
+              RELOCATE.SYS
+            </h1>
+            <p className="text-green-300 font-mono text-lg tracking-wider">
+              [ UNAUTHORIZED ACCESS DETECTED ]
+            </p>
+            <p className="text-gray-400 font-mono text-sm mt-2">
+              SECURITY BREACH IMMINENT - INITIATE COUNTERMEASURES
+            </p>
           </div>
 
-          <div className="mb-8">
-            <label className="block text-gray-400 mb-2 font-mono text-sm tracking-wider">PASSWORD</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
-              required
-            />
+          {error && (
+            <div className="bg-red-900 border border-red-400 text-red-200 p-4 mb-6 font-mono text-sm animate-pulse">
+              ⚠️ {error}
+            </div>
+          )}
+
+          <div className="text-center">
+            <button
+              onClick={startHackingAnimation}
+              className="bg-green-500 text-black px-8 py-4 font-mono font-bold text-xl tracking-wider hover:bg-green-400 transition-all duration-300 border-2 border-green-300 shadow-lg hover:shadow-green-500/50 animate-pulse"
+            >
+              [ INITIATE SYSTEM BREACH ]
+            </button>
+            <p className="text-green-400 font-mono text-xs mt-4 opacity-75">
+              WARNING: Unauthorized access is illegal
+            </p>
           </div>
+        </div>
+      </div>
+    );
+  }
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-white text-black py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
-          >
-            {isLoading ? "AUTHENTICATING..." : "LOGIN"}
-          </button>
-        </form>
+  if (currentPhase === 'hacking' || currentPhase === 'backdoor') {
+    return (
+      <div className="min-h-screen bg-black p-4 font-mono text-green-400 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-2 border-green-500 bg-black p-6 h-screen overflow-y-auto">
+            <div className="flex items-center mb-4">
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+              <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+              <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+              <span className="text-green-300 text-sm">BREACH_TERMINAL_v2.5.0</span>
+            </div>
+            
+            <div className="space-y-1">
+              {terminalLines.map((line, index) => (
+                <div key={index} className="flex">
+                  <span className="text-green-500 mr-2">$</span>
+                  <span className={line.includes('SUCCESS') || line.includes('GRANTED') ? 'text-green-300 font-bold' : 
+                                line.includes('ERROR') || line.includes('FAILED') ? 'text-red-400' :
+                                line.includes('Valid credentials') || line.includes('Backdoor') ? 'text-yellow-400' : ''}
+                  >
+                    {line}
+                  </span>
+                </div>
+              ))}
+              <div className="flex">
+                <span className="text-green-500 mr-2">$</span>
+                <span className="animate-pulse">█</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        <div className="mt-8 text-center">
-          <p className="text-gray-500 font-mono text-sm">
-            RELOCATE ME: PHOENIX → PEAK DISTRICT
+  if (currentPhase === 'success' && !showForm) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="text-center">
+          <div className="text-8xl text-green-400 font-mono mb-8 animate-pulse">
+            ✓
+          </div>
+          <h1 className="text-4xl font-bold text-green-400 mb-4 font-mono">
+            ACCESS GRANTED
+          </h1>
+          <p className="text-green-300 font-mono text-xl">
+            Backdoor authentication successful
+          </p>
+          <p className="text-gray-400 font-mono text-sm mt-2">
+            Credentials extracted: relocate_user / SecurePass2025!
           </p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (showForm || currentPhase === 'authenticating') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-gray-900 border-2 border-green-500 p-8 shadow-2xl">
+          <div className="text-center mb-8">
+            <div className="text-4xl text-green-400 mb-4">🔓</div>
+            <h1 className="text-3xl font-bold text-green-400 mb-2 font-mono">BACKDOOR ACTIVE</h1>
+            <p className="text-green-300 font-mono text-sm">Using compromised credentials</p>
+          </div>
+
+          <form onSubmit={handleRealLogin}>
+            <div className="mb-6">
+              <label className="block text-green-400 mb-2 font-mono text-sm tracking-wider">EXTRACTED USERNAME</label>
+              <input
+                type="text"
+                value="relocate_user"
+                disabled
+                className="w-full bg-black border-2 border-green-500 p-3 text-green-400 font-mono opacity-75"
+              />
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-green-400 mb-2 font-mono text-sm tracking-wider">CRACKED PASSWORD</label>
+              <input
+                type="password"
+                value="SecurePass2025!"
+                disabled
+                className="w-full bg-black border-2 border-green-500 p-3 text-green-400 font-mono opacity-75"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={currentPhase === 'authenticating'}
+              className="w-full bg-green-500 text-black py-3 font-mono font-bold tracking-wider hover:bg-green-400 transition-all duration-300 disabled:opacity-50"
+            >
+              {currentPhase === 'authenticating' ? "EXECUTING BACKDOOR..." : "AUTHENTICATE WITH BACKDOOR"}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-500 font-mono text-xs">
+              ⚠️ UNAUTHORIZED ACCESS DETECTED ⚠️
+            </p>
+            <p className="text-green-400 font-mono text-xs mt-1">
+              RELOCATE.SYS COMPROMISED
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 // Main App Component
