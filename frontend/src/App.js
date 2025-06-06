@@ -1889,7 +1889,20 @@ const LoginPage = () => {
     setCurrentPhase('hacking');
     setTerminalLines([]);
     
+    // Add a timeout safety net in case animation gets stuck
+    const timeoutId = setTimeout(() => {
+      console.log("Animation timeout reached, forcing completion");
+      setCurrentPhase('success');
+      setTimeout(() => {
+        setShowForm(true);
+      }, 1000);
+    }, 15000); // 15 second timeout
+    
+    setAnimationTimeoutId(timeoutId);
+    
     typewriterEffect(hackingCommands, () => {
+      clearTimeout(timeoutId);
+      console.log("Animation completed normally");
       setTimeout(() => {
         setCurrentPhase('success');
         setTimeout(() => {
@@ -1897,6 +1910,16 @@ const LoginPage = () => {
         }, 2000);
       }, 1000);
     });
+  };
+
+  const skipAnimation = () => {
+    if (animationTimeoutId) {
+      clearTimeout(animationTimeoutId);
+    }
+    setCurrentPhase('success');
+    setTimeout(() => {
+      setShowForm(true);
+    }, 500);
   };
 
   const handleRealLogin = async (e) => {
