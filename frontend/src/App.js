@@ -1856,6 +1856,7 @@ const LoginPage = () => {
 
     const typeNextChar = () => {
       if (currentLineIndex >= lines.length) {
+        console.log("Typewriter animation completed, calling callback");
         callback();
         return;
       }
@@ -1867,13 +1868,15 @@ const LoginPage = () => {
         setTerminalLines([...currentTerminalLines]);
         currentLineIndex++;
         currentCharIndex = 0;
-        setTimeout(typeNextChar, 100 + Math.random() * 200);
+        // Faster line transition - reduced from 100-300ms to 50-150ms
+        setTimeout(typeNextChar, 50 + Math.random() * 100);
       } else {
         const partialLine = currentLine.substring(0, currentCharIndex + 1);
         const displayLines = [...currentTerminalLines, partialLine];
         setTerminalLines(displayLines);
         currentCharIndex++;
-        setTimeout(typeNextChar, 20 + Math.random() * 80);
+        // Much faster character typing - reduced from 20-100ms to 5-15ms
+        setTimeout(typeNextChar, 5 + Math.random() * 10);
       }
     };
 
