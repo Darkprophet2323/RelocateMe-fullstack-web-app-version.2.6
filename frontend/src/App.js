@@ -2044,17 +2044,17 @@ const LoginPage = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-6">
         <div className="text-center">
-          <div className="text-8xl text-green-400 font-mono mb-8 animate-pulse">
+          <div className="text-8xl text-white font-mono mb-8 animate-pulse">
             ✓
           </div>
-          <h1 className="text-4xl font-bold text-green-400 mb-4 font-mono">
+          <h1 className="text-4xl font-bold text-white mb-4 font-mono">
             ACCESS GRANTED
           </h1>
-          <p className="text-green-300 font-mono text-xl">
+          <p className="text-gray-300 font-mono text-xl">
             Backdoor authentication successful
           </p>
-          <p className="text-gray-400 font-mono text-sm mt-2">
-            Credentials extracted: relocate_user / SecurePass2025!
+          <p className="text-gray-500 font-mono text-sm mt-2">
+            Credentials extracted: <span className="text-red-300">relocate_user / SecurePass2025!</span>
           </p>
         </div>
       </div>
