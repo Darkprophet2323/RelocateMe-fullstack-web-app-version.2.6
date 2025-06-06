@@ -23,11 +23,15 @@
   fill: #f7f8fa;
 }
 
-/* NOIR THEME BUTTON STYLES */
+/* NOIR THEME BUTTON STYLES - ENHANCED SPECIFICITY */
 button, 
 input[type="submit"], 
 input[type="button"], 
-.button {
+.button,
+button.hoverable,
+.hoverable button,
+nav button,
+form button {
   background: #000000 !important;
   color: #ffffff !important;
   border: 2px solid #ffffff !important;
@@ -45,7 +49,11 @@ input[type="button"],
 button:hover, 
 input[type="submit"]:hover, 
 input[type="button"]:hover, 
-.button:hover {
+.button:hover,
+button.hoverable:hover,
+.hoverable button:hover,
+nav button:hover,
+form button:hover {
   background: #ffffff !important;
   color: #000000 !important;
   border: 2px solid #000000 !important;
@@ -56,38 +64,102 @@ input[type="button"]:hover,
 button:active, 
 input[type="submit"]:active, 
 input[type="button"]:active, 
-.button:active {
+.button:active,
+button.hoverable:active,
+.hoverable button:active,
+nav button:active,
+form button:active {
   transform: translate(1px, 1px) !important;
   box-shadow: 0px 0px 0px #000000 !important;
 }
 
+/* Override any existing button classes */
+.bg-white,
+.bg-gray-200,
+.bg-gray-300,
+.bg-red-900,
+.bg-green-500,
+button.bg-white,
+button.bg-gray-200,
+button.bg-gray-300,
+button.bg-red-900,
+button.bg-green-500 {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.bg-white:hover,
+.bg-gray-200:hover,
+.bg-gray-300:hover,
+.bg-red-900:hover,
+.bg-green-500:hover,
+button.bg-white:hover,
+button.bg-gray-200:hover,
+button.bg-gray-300:hover,
+button.bg-red-900:hover,
+button.bg-green-500:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
 /* Special button variants */
-.logout-button {
+.logout-button,
+button.logout-button {
   background: #000000 !important;
   color: #ff0000 !important;
   border: 2px solid #ff0000 !important;
   box-shadow: 2px 2px 0px #ff0000 !important;
 }
 
-.logout-button:hover {
+.logout-button:hover,
+button.logout-button:hover {
   background: #ff0000 !important;
   color: #ffffff !important;
   border: 2px solid #ffffff !important;
   box-shadow: 2px 2px 0px #ffffff !important;
 }
 
-.primary-button {
+.primary-button,
+button.primary-button {
   background: #000000 !important;
   color: #00ff00 !important;
   border: 2px solid #00ff00 !important;
   box-shadow: 2px 2px 0px #00ff00 !important;
 }
 
-.primary-button:hover {
+.primary-button:hover,
+button.primary-button:hover {
   background: #00ff00 !important;
   color: #000000 !important;
   border: 2px solid #000000 !important;
   box-shadow: 2px 2px 0px #000000 !important;
+}
+
+/* Override Tailwind button classes specifically */
+.text-black {
+  color: #ffffff !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+button.text-black {
+  color: #ffffff !important;
+}
+
+button.text-white {
+  color: #ffffff !important;
+}
+
+button.text-black:hover {
+  color: #000000 !important;
+}
+
+button.text-white:hover {
+  color: #000000 !important;
 }
 
 /* Hoverable link styling from example */
