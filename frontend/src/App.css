@@ -1,4 +1,4 @@
-/* CURSOR STYLES - EXACT IMPLEMENTATION FROM EXAMPLE */
+/* CURSOR STYLES - SIMPLIFIED AND WORKING */
 .spy-cursor-active {
   cursor: none !important;
 }
@@ -9,18 +9,23 @@
 
 .cursor {
   pointer-events: none;
+  z-index: 10000;
 }
 
 .cursor__ball {
-  position: fixed;
-  top: 0;
-  left: 0;
-  mix-blend-mode: difference;
-  z-index: 1000;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none !important;
+  z-index: 10000 !important;
 }
 
-.cursor__ball circle {
-  fill: #f7f8fa;
+.cursor__ball svg {
+  display: block !important;
+}
+
+.cursor__ball svg circle {
+  fill: #ffffff !important;
 }
 
 /* NOIR THEME BUTTON STYLES - ENHANCED SPECIFICITY */
