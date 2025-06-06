@@ -1,3 +1,109 @@
+/* INK BLOB CURSOR STYLES */
+.cursor__ball--big,
+.cursor__ball--small {
+  position: fixed;
+  top: 0;
+  left: 0;
+  mix-blend-mode: difference;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.cursor__ball--big {
+  width: 30px;
+  height: 30px;
+  background: #ffffff;
+  opacity: 0.8;
+  transition: transform 0.4s ease-out;
+}
+
+.cursor__ball--small {
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  opacity: 1;
+  transition: transform 0.1s ease-out;
+}
+
+/* Hide default cursor when custom cursor is active */
+.custom-cursor-active {
+  cursor: none !important;
+}
+
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
+/* Ink blob effect variations */
+.cursor__ball--big.ink-writing {
+  background: radial-gradient(circle, #000000 30%, rgba(0,0,0,0.8) 60%, rgba(0,0,0,0.4) 80%);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  animation: ink-morph 2s ease-in-out infinite;
+}
+
+.cursor__ball--small.ink-writing {
+  background: #000000;
+  border-radius: 50% 80% 30% 60%;
+  animation: ink-drip 1.5s ease-in-out infinite;
+}
+
+@keyframes ink-morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: rotate(0deg);
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    transform: rotate(90deg);
+  }
+  50% {
+    border-radius: 70% 30% 60% 40% / 40% 70% 60% 30%;
+    transform: rotate(180deg);
+  }
+  75% {
+    border-radius: 40% 70% 30% 60% / 60% 40% 70% 30%;
+    transform: rotate(270deg);
+  }
+}
+
+@keyframes ink-drip {
+  0%, 100% {
+    border-radius: 50% 80% 30% 60%;
+    transform: scale(1);
+  }
+  50% {
+    border-radius: 80% 30% 60% 50%;
+    transform: scale(0.8);
+  }
+}
+
+/* Hoverable elements get special ink effect */
+.hoverable:hover ~ .cursor__ball--big,
+.hoverable:hover ~ .cursor__ball--small,
+.cursor__ball--big.hovering,
+.cursor__ball--small.hovering {
+  animation-duration: 0.5s;
+}
+
+/* Special cursor states */
+.cursor__ball--big.clicking {
+  background: radial-gradient(circle, #ff0000 20%, #000000 40%, rgba(0,0,0,0.6) 80%);
+  transform: scale(1.5) !important;
+  border-radius: 30% 70% 50% 50% / 60% 40% 60% 40%;
+}
+
+.cursor__ball--small.clicking {
+  background: #ff0000;
+  transform: scale(1.8) !important;
+}
+
+/* Text selection cursor */
+.cursor__ball--big.text-selecting {
+  background: linear-gradient(45deg, #000000, #333333);
+  border-radius: 10% 90% 20% 80% / 30% 70% 30% 70%;
+}
+
 /* NOIR HACKING ANIMATION STYLES */
 .film-grain {
   background: 
