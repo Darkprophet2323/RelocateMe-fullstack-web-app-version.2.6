@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// Spy Cursor Component - Exact Implementation from Example
+// Spy Cursor Component - Enhanced to Work on All Page Elements
 const SpyCursor = () => {
   const bigBallRef = useRef(null);
   const smallBallRef = useRef(null);
@@ -49,36 +49,124 @@ const SpyCursor = () => {
       });
     }
 
-    // Add hover listeners to interactive elements
+    // Add hoverable class to ALL interactive elements
+    const addHoverableClasses = () => {
+      // Remove existing hoverable classes first
+      document.querySelectorAll('.hoverable').forEach(el => {
+        el.classList.remove('hoverable');
+      });
+
+      // Add hoverable class to ALL interactive elements
+      const interactiveSelectors = [
+        'button',
+        'a',
+        'input',
+        'textarea',
+        'select',
+        '[role="button"]',
+        '[role="link"]',
+        '[role="tab"]',
+        '[role="menuitem"]',
+        '[data-testid]',
+        '.clickable',
+        '.btn',
+        '.link',
+        'label',
+        '[onclick]',
+        '[href]',
+        '[tabindex]',
+        'summary',
+        'details'
+      ];
+
+      interactiveSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+          element.classList.add('hoverable');
+        });
+      });
+
+      // Also add to any element with cursor pointer
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.cursor === 'pointer') {
+          element.classList.add('hoverable');
+        }
+      });
+    };
+
+    // Add hover listeners to ALL hoverable elements
     const addHoverListeners = () => {
       const $hoverables = document.querySelectorAll('.hoverable');
       for (let i = 0; i < $hoverables.length; i++) {
+        // Remove existing listeners first
+        $hoverables[i].removeEventListener('mouseenter', onMouseHover);
+        $hoverables[i].removeEventListener('mouseleave', onMouseHoverOut);
+        
+        // Add new listeners
         $hoverables[i].addEventListener('mouseenter', onMouseHover);
         $hoverables[i].addEventListener('mouseleave', onMouseHoverOut);
       }
     };
 
     // Initial setup
+    addHoverableClasses();
     addHoverListeners();
 
     // Re-run when DOM changes (for dynamically added elements)
     const observer = new MutationObserver(() => {
-      addHoverListeners();
+      // Debounce the updates to avoid excessive calls
+      clearTimeout(window.hoverableUpdateTimeout);
+      window.hoverableUpdateTimeout = setTimeout(() => {
+        addHoverableClasses();
+        addHoverListeners();
+      }, 100);
     });
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'role', 'onclick', 'href', 'tabindex']
     });
 
     // Listeners - exact implementation from example
     document.body.addEventListener('mousemove', onMouseMove);
 
+    // Also listen for route changes to re-apply hoverable classes
+    const handleRouteChange = () => {
+      setTimeout(() => {
+        addHoverableClasses();
+        addHoverListeners();
+      }, 200);
+    };
+
+    // Listen for popstate (back/forward navigation)
+    window.addEventListener('popstate', handleRouteChange);
+
+    // Listen for any URL changes
+    const originalPushState = history.pushState;
+    history.pushState = function(...args) {
+      originalPushState.apply(this, args);
+      handleRouteChange();
+    };
+
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function(...args) {
+      originalReplaceState.apply(this, args);
+      handleRouteChange();
+    };
+
     // Cleanup
     return () => {
       document.body.classList.remove('spy-cursor-active');
       document.body.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('popstate', handleRouteChange);
       observer.disconnect();
+      
+      // Restore original history methods
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
       
       // Remove hover listeners
       const $hoverables = document.querySelectorAll('.hoverable');
@@ -86,6 +174,9 @@ const SpyCursor = () => {
         $hoverables[i].removeEventListener('mouseenter', onMouseHover);
         $hoverables[i].removeEventListener('mouseleave', onMouseHoverOut);
       }
+
+      // Clear timeout
+      clearTimeout(window.hoverableUpdateTimeout);
     };
   }, []);
 
