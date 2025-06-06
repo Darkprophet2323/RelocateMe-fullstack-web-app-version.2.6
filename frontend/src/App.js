@@ -935,7 +935,7 @@ const VisaPage = () => {
               <div className="p-4 bg-gray-900 border border-gray-700">
                 <h3 className="font-semibold mb-3 text-white font-mono tracking-wider">REQUIREMENTS:</h3>
                 <ul className="space-y-2">
-                  {selectedVisa.requirements.map((req, index) => (
+                  {selectedVisa.requirements && selectedVisa.requirements.map((req, index) => (
                     <li key={index} className="text-sm text-gray-300 flex items-start font-mono">
                       <span className="text-white mr-3">▸</span>
                       {req}
