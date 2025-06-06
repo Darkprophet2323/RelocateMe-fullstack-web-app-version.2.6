@@ -138,7 +138,54 @@ textarea.hoverable:hover {
   }
 }
 
-/* Mobile touch support - show cursor on touch devices */
+/* Mobile animations and responsiveness */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 768px) {
+  .spy-cursor .cursor__ball--big {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .spy-cursor .cursor__ball--small {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  
+  /* Ensure text is readable on mobile */
+  body {
+    font-size: 16px !important;
+  }
+  
+  /* Mobile-friendly button sizes */
+  button {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Mobile-friendly link padding */
+  a {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+}
+
+/* Mobile touch support - show normal cursor on touch devices */
 @media (hover: none) and (pointer: coarse) {
   .spy-cursor-active {
     cursor: auto !important;
@@ -151,6 +198,32 @@ textarea.hoverable:hover {
   .spy-cursor {
     display: none !important;
   }
+  
+  /* Enhanced touch targets for mobile */
+  .hoverable {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* Ensure links are always visible and functional */
+a {
+  text-decoration: none !important;
+  color: inherit !important;
+  cursor: pointer !important;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+/* Ensure navigation is always visible */
+nav {
+  visibility: visible !important;
+  display: block !important;
 }
 
 /* NOIR HACKING ANIMATION STYLES */
