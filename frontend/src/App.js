@@ -2228,7 +2228,7 @@ const LoginPage = () => {
               </div>
               <button
                 onClick={skipAnimation}
-                className="text-white border border-gray-500 px-3 py-1 text-xs hover:bg-white hover:text-black transition-all duration-300"
+                className="hoverable"
               >
                 SKIP ANIMATION
               </button>
