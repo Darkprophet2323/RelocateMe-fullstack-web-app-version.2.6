@@ -131,11 +131,29 @@ const InkBlobCursor = () => {
     document.addEventListener('mouseup', onMouseUp);
 
     // Add hover listeners to interactive elements
-    const hoverableElements = document.querySelectorAll('button, a, input, textarea, [role="button"], .hoverable');
-    hoverableElements.forEach(element => {
-      element.addEventListener('mouseenter', onMouseHover);
-      element.addEventListener('mouseleave', onMouseHoverOut);
-      element.classList.add('hoverable');
+    const addHoverListeners = () => {
+      const hoverableElements = document.querySelectorAll('button, a, input, textarea, [role="button"], .hoverable, [data-testid], .clickable');
+      hoverableElements.forEach(element => {
+        if (!element.hasAttribute('data-ink-cursor')) {
+          element.addEventListener('mouseenter', onMouseHover);
+          element.addEventListener('mouseleave', onMouseHoverOut);
+          element.classList.add('hoverable');
+          element.setAttribute('data-ink-cursor', 'true');
+        }
+      });
+    };
+
+    // Initial setup
+    addHoverListeners();
+
+    // Re-run when DOM changes (for dynamically added elements)
+    const observer = new MutationObserver(() => {
+      addHoverListeners();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
     });
 
     // Cleanup
