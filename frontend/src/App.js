@@ -499,10 +499,10 @@ const DashboardPage = () => {
                 }`}
               >
                 <h3 className={`font-bold mb-3 font-mono tracking-wide group-hover:text-gray-200 ${
-                  link.special ? 'text-red-200' : 'text-white'
+                  link.special ? 'text-black' : 'text-white'
                 }`}>{link.name}</h3>
                 <p className={`text-sm font-mono ${
-                  link.special ? 'text-red-300' : 'text-gray-400'
+                  link.special ? 'text-black opacity-80' : 'text-gray-400'
                 }`}>{link.description}</p>
               </a>
             ))}
