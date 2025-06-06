@@ -2000,13 +2000,21 @@ const LoginPage = () => {
   if (currentPhase === 'hacking' || currentPhase === 'backdoor') {
     return (
       <div className="min-h-screen bg-black p-4 font-mono text-green-400 overflow-hidden">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto relative">
           <div className="border-2 border-green-500 bg-black p-6 h-screen overflow-y-auto">
-            <div className="flex items-center mb-4">
-              <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-              <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
-              <span className="text-green-300 text-sm">BREACH_TERMINAL_v2.5.0</span>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                <span className="text-green-300 text-sm">BREACH_TERMINAL_v2.5.0</span>
+              </div>
+              <button
+                onClick={skipAnimation}
+                className="text-green-400 border border-green-400 px-3 py-1 text-xs hover:bg-green-400 hover:text-black transition-all duration-300"
+              >
+                SKIP ANIMATION
+              </button>
             </div>
             
             <div className="space-y-1">
