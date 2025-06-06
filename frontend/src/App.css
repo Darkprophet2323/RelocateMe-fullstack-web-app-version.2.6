@@ -1,4 +1,4 @@
-/* INK BLOB CURSOR STYLES */
+/* INK BLOB CURSOR STYLES - REALISTIC INK DROPLETS */
 .cursor__ball--big,
 .cursor__ball--small {
   position: fixed;
@@ -6,25 +6,37 @@
   left: 0;
   z-index: 9999;
   pointer-events: none;
-  border-radius: 50%;
   mix-blend-mode: normal;
 }
 
 .cursor__ball--big {
-  width: 30px;
-  height: 30px;
-  background: radial-gradient(circle, #000000 40%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.3) 100%);
-  opacity: 0.9;
+  width: 35px;
+  height: 35px;
+  background: 
+    radial-gradient(ellipse 60% 80% at 40% 30%, #000000 0%, #000000 30%, rgba(0,0,0,0.8) 60%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.1) 100%),
+    radial-gradient(ellipse 40% 60% at 60% 70%, rgba(0,0,0,0.6) 0%, transparent 70%);
+  border-radius: 65% 35% 60% 40% / 70% 30% 50% 70%;
+  opacity: 0.95;
   transition: transform 0.4s ease-out;
-  filter: blur(1px);
+  filter: blur(0.5px);
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.3),
+    inset -2px -2px 4px rgba(0,0,0,0.2),
+    inset 1px 1px 2px rgba(255,255,255,0.1);
 }
 
 .cursor__ball--small {
-  width: 8px;
-  height: 8px;
-  background: #000000;
+  width: 12px;
+  height: 12px;
+  background: 
+    radial-gradient(ellipse 70% 90% at 35% 25%, #000000 0%, #000000 40%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.3) 90%, transparent 100%);
+  border-radius: 70% 30% 60% 40% / 80% 20% 40% 80%;
   opacity: 1;
   transition: transform 0.1s ease-out;
+  filter: blur(0.3px);
+  box-shadow: 
+    0 0.5px 1px rgba(0,0,0,0.4),
+    inset -1px -1px 2px rgba(0,0,0,0.3);
 }
 
 /* Hide default cursor when custom cursor is active */
@@ -36,145 +48,199 @@
   cursor: none !important;
 }
 
-/* Ink blob effect variations */
+/* Realistic ink writing effects */
 .cursor__ball--big.ink-writing {
-  background: radial-gradient(ellipse, #000000 20%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.2) 100%);
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  animation: ink-morph 3s ease-in-out infinite;
-  filter: blur(1.5px);
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  background: 
+    radial-gradient(ellipse 50% 70% at 45% 35%, #000000 0%, #000000 25%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.6) 75%, rgba(0,0,0,0.2) 90%, transparent 100%),
+    radial-gradient(ellipse 30% 50% at 65% 65%, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 80%),
+    radial-gradient(ellipse 80% 40% at 30% 70%, rgba(0,0,0,0.3) 0%, transparent 70%);
+  border-radius: 45% 55% 70% 30% / 60% 40% 30% 70%;
+  animation: realistic-ink-flow 4s ease-in-out infinite;
+  filter: blur(1px);
+  box-shadow: 
+    0 2px 6px rgba(0,0,0,0.4),
+    inset -3px -3px 6px rgba(0,0,0,0.3),
+    inset 2px 2px 4px rgba(255,255,255,0.05);
 }
 
 .cursor__ball--small.ink-writing {
-  background: radial-gradient(circle, #000000 60%, rgba(0,0,0,0.8) 100%);
-  border-radius: 50% 80% 30% 60%;
-  animation: ink-drip 2s ease-in-out infinite;
-  filter: blur(0.5px);
+  background: 
+    radial-gradient(ellipse 60% 80% at 40% 30%, #000000 0%, #000000 50%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0.4) 95%, transparent 100%);
+  border-radius: 80% 20% 40% 60% / 30% 70% 60% 40%;
+  animation: ink-satellite-drip 3s ease-in-out infinite;
+  filter: blur(0.4px);
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.5),
+    inset -1px -1px 3px rgba(0,0,0,0.4);
 }
 
-@keyframes ink-morph {
+@keyframes realistic-ink-flow {
   0%, 100% {
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    border-radius: 45% 55% 70% 30% / 60% 40% 30% 70%;
     transform: rotate(0deg) scale(1);
   }
   25% {
-    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-    transform: rotate(90deg) scale(1.1);
+    border-radius: 70% 30% 45% 55% / 40% 60% 70% 30%;
+    transform: rotate(90deg) scale(1.05);
   }
   50% {
-    border-radius: 70% 30% 60% 40% / 40% 70% 60% 30%;
-    transform: rotate(180deg) scale(0.9);
+    border-radius: 30% 70% 55% 45% / 70% 30% 40% 60%;
+    transform: rotate(180deg) scale(0.95);
   }
   75% {
-    border-radius: 40% 70% 30% 60% / 60% 40% 70% 30%;
-    transform: rotate(270deg) scale(1.05);
+    border-radius: 55% 45% 30% 70% / 30% 70% 60% 40%;
+    transform: rotate(270deg) scale(1.02);
   }
 }
 
-@keyframes ink-drip {
+@keyframes ink-satellite-drip {
   0%, 100% {
-    border-radius: 50% 80% 30% 60%;
+    border-radius: 80% 20% 40% 60% / 30% 70% 60% 40%;
     transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
-  33% {
-    border-radius: 80% 30% 60% 50%;
-    transform: scale(0.8) rotate(120deg);
+  25% {
+    border-radius: 40% 60% 80% 20% / 70% 30% 40% 60%;
+    transform: scale(0.7) rotate(90deg);
+    opacity: 0.8;
   }
-  66% {
-    border-radius: 30% 60% 50% 80%;
-    transform: scale(1.2) rotate(240deg);
+  50% {
+    border-radius: 60% 40% 20% 80% / 60% 40% 70% 30%;
+    transform: scale(1.1) rotate(180deg);
+    opacity: 0.9;
+  }
+  75% {
+    border-radius: 20% 80% 60% 40% / 40% 60% 30% 70%;
+    transform: scale(0.8) rotate(270deg);
+    opacity: 0.85;
   }
 }
 
-/* Special cursor states */
+/* Enhanced clicking effects - ink splatter */
 .cursor__ball--big.clicking {
-  background: radial-gradient(circle, #333333 20%, #000000 50%, rgba(0,0,0,0.8) 80%);
-  transform: scale(1.8) !important;
-  border-radius: 30% 70% 50% 50% / 60% 40% 60% 40%;
-  filter: blur(2px);
-  animation: ink-splash 0.3s ease-out;
+  background: 
+    radial-gradient(ellipse 40% 60% at 50% 50%, #222222 0%, #000000 30%, rgba(0,0,0,0.8) 60%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.1) 100%),
+    radial-gradient(ellipse 80% 30% at 30% 20%, rgba(0,0,0,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 80% at 70% 80%, rgba(0,0,0,0.5) 0%, transparent 60%);
+  transform: scale(2.2) !important;
+  border-radius: 20% 80% 40% 60% / 70% 30% 60% 40%;
+  filter: blur(1.5px);
+  animation: ink-splatter 0.4s ease-out;
+  box-shadow: 
+    0 3px 8px rgba(0,0,0,0.5),
+    inset -4px -4px 8px rgba(0,0,0,0.4),
+    inset 3px 3px 6px rgba(255,255,255,0.03);
 }
 
 .cursor__ball--small.clicking {
-  background: #333333;
-  transform: scale(2.5) !important;
-  filter: blur(1px);
+  background: 
+    radial-gradient(ellipse 50% 70% at 40% 30%, #333333 0%, #000000 60%, rgba(0,0,0,0.6) 90%, transparent 100%);
+  transform: scale(3) !important;
+  border-radius: 30% 70% 60% 40% / 80% 20% 40% 60%;
+  filter: blur(0.8px);
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.6),
+    inset -2px -2px 4px rgba(0,0,0,0.5);
 }
 
-@keyframes ink-splash {
+@keyframes ink-splatter {
   0% {
     border-radius: 50%;
-    filter: blur(1px);
+    filter: blur(0.5px);
   }
-  50% {
-    border-radius: 20% 80% 30% 70% / 40% 60% 50% 80%;
-    filter: blur(3px);
+  30% {
+    border-radius: 10% 90% 20% 80% / 30% 70% 40% 60%;
+    filter: blur(2px);
+  }
+  60% {
+    border-radius: 40% 60% 70% 30% / 20% 80% 60% 40%;
+    filter: blur(1.8px);
   }
   100% {
-    border-radius: 30% 70% 50% 50% / 60% 40% 60% 40%;
-    filter: blur(2px);
+    border-radius: 20% 80% 40% 60% / 70% 30% 60% 40%;
+    filter: blur(1.5px);
   }
 }
 
-/* Text selection and input cursor */
+/* Text input cursor - ink pen tip */
 .cursor__ball--big.text-selecting {
-  background: linear-gradient(45deg, #000000, #444444, #000000);
-  border-radius: 10% 90% 20% 80% / 30% 70% 30% 70%;
-  animation: ink-flow 1.5s ease-in-out infinite;
-  transform: rotate(15deg);
+  background: 
+    linear-gradient(135deg, #000000 0%, #000000 40%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.4) 90%, transparent 100%),
+    radial-gradient(ellipse 30% 90% at 70% 10%, rgba(0,0,0,0.6) 0%, transparent 80%);
+  border-radius: 15% 85% 25% 75% / 40% 60% 30% 70%;
+  animation: pen-tip-flow 2s ease-in-out infinite;
+  transform: rotate(25deg);
+  filter: blur(0.8px);
+  box-shadow: 
+    0 2px 5px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3),
+    inset 1px 1px 3px rgba(255,255,255,0.08);
 }
 
 .cursor__ball--small.text-selecting {
-  background: #000000;
-  border-radius: 20% 80% 60% 40%;
-  animation: ink-droplet 1s ease-in-out infinite;
+  background: 
+    radial-gradient(ellipse 40% 80% at 30% 20%, #000000 0%, #000000 60%, rgba(0,0,0,0.7) 85%, transparent 100%);
+  border-radius: 20% 80% 60% 40% / 70% 30% 50% 50%;
+  animation: pen-ink-drop 1.5s ease-in-out infinite;
+  filter: blur(0.4px);
 }
 
-@keyframes ink-flow {
+@keyframes pen-tip-flow {
   0%, 100% {
-    border-radius: 10% 90% 20% 80% / 30% 70% 30% 70%;
+    border-radius: 15% 85% 25% 75% / 40% 60% 30% 70%;
     opacity: 0.9;
   }
   50% {
-    border-radius: 40% 60% 80% 20% / 70% 30% 70% 30%;
-    opacity: 0.7;
+    border-radius: 25% 75% 15% 85% / 60% 40% 70% 30%;
+    opacity: 0.8;
   }
 }
 
-@keyframes ink-droplet {
+@keyframes pen-ink-drop {
   0%, 100% {
     border-radius: 50%;
     transform: scale(1);
   }
   50% {
-    border-radius: 30% 70% 60% 40%;
-    transform: scale(0.7);
+    border-radius: 30% 70% 60% 40% / 40% 60% 70% 30%;
+    transform: scale(0.6);
   }
 }
 
-/* Hover effect for buttons and links */
+/* Button hover - ink pool effect */
+.cursor__ball--big.button-hover {
+  background: 
+    radial-gradient(ellipse 50% 70% at 45% 35%, #111111 0%, #000000 25%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.6) 75%, rgba(0,0,0,0.3) 90%, transparent 100%),
+    radial-gradient(ellipse 70% 40% at 25% 65%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, transparent 80%),
+    radial-gradient(ellipse 40% 80% at 75% 25%, rgba(0,0,0,0.5) 0%, transparent 70%);
+  border-radius: 40% 60% 55% 45% / 65% 35% 40% 60%;
+  animation: ink-pool-spread 2.5s ease-in-out infinite;
+  filter: blur(1.2px);
+  box-shadow: 
+    0 3px 7px rgba(0,0,0,0.5),
+    inset -3px -3px 7px rgba(0,0,0,0.4),
+    inset 2px 2px 5px rgba(255,255,255,0.06);
+}
+
+@keyframes ink-pool-spread {
+  0%, 100% {
+    border-radius: 40% 60% 55% 45% / 65% 35% 40% 60%;
+  }
+  33% {
+    border-radius: 55% 45% 40% 60% / 35% 65% 60% 40%;
+  }
+  66% {
+    border-radius: 60% 40% 65% 35% / 45% 55% 35% 65%;
+  }
+}
+
+/* Hoverable elements styling */
 .hoverable {
   transition: all 0.3s ease;
 }
 
 .hoverable:hover {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-}
-
-/* Special cursor for different elements */
-.cursor__ball--big.button-hover {
-  background: radial-gradient(circle, #1a1a1a 30%, #000000 60%, rgba(0,0,0,0.8) 90%);
-  border-radius: 45% 55% 35% 65% / 55% 35% 65% 45%;
-  animation: button-ink 1s ease-in-out infinite;
-}
-
-@keyframes button-ink {
-  0%, 100% {
-    border-radius: 45% 55% 35% 65% / 55% 35% 65% 45%;
-  }
-  50% {
-    border-radius: 35% 65% 55% 45% / 45% 55% 35% 65%;
-  }
 }
 
 /* NOIR HACKING ANIMATION STYLES */
