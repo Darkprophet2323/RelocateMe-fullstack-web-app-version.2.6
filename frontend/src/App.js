@@ -1231,7 +1231,7 @@ const EmploymentPage = () => {
                 className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
               >
                 <option value="all">ALL TYPES</option>
-                {jobsData.job_types.map(type => (
+                {jobsData.job_types && jobsData.job_types.map(type => (
                   <option key={type} value={type}>{type.replace('-', ' ').toUpperCase()}</option>
                 ))}
               </select>
