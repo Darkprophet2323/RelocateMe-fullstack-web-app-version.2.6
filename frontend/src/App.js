@@ -1218,7 +1218,7 @@ const EmploymentPage = () => {
                 className="w-full bg-black border-2 border-gray-700 p-3 text-white font-mono focus:border-white focus:outline-none transition-all duration-300"
               >
                 <option value="all">ALL CATEGORIES</option>
-                {jobsData.categories.map(category => (
+                {jobsData.categories && jobsData.categories.map(category => (
                   <option key={category} value={category}>{category.toUpperCase()}</option>
                 ))}
               </select>
