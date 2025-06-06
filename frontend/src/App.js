@@ -284,7 +284,7 @@ const Navigation = ({ user, onLogout, currentPath }) => {
             <span className="text-gray-300 text-xs font-mono">USER: {user.toUpperCase()}</span>
             <button
               onClick={onLogout}
-              className="hoverable bg-red-900 text-white px-4 py-2 border border-red-700 hover:bg-red-800 hover:border-red-600 transition-all duration-300 text-xs font-mono font-semibold tracking-wider rounded-md"
+              className="hoverable logout-button"
             >
               [LOGOUT]
             </button>
