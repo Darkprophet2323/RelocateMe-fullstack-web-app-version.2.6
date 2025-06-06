@@ -2296,6 +2296,7 @@ const App = () => {
 
     return (
       <>
+        <InkBlobCursor />
         <Navigation user={username} onLogout={handleLogout} currentPath={currentPath} />
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
