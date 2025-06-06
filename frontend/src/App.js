@@ -2123,6 +2123,19 @@ const App = () => {
 
   // Check if user is already logged in
   useEffect(() => {
+    // Check for logout parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('logout') === 'true') {
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      setIsLoggedIn(false);
+      setUsername("");
+      console.log("Forced logout via URL parameter");
+      // Remove the parameter from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
     const token = localStorage.getItem("token");
     const storedUsername = localStorage.getItem("username");
     console.log("Checking login status:", { token: !!token, username: storedUsername });
