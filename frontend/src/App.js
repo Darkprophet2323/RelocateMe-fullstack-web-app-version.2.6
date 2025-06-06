@@ -162,9 +162,14 @@ const InkBlobCursor = () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mouseup', onMouseUp);
-      hoverableElements.forEach(element => {
+      observer.disconnect();
+      
+      // Remove listeners from all elements with data-ink-cursor
+      const elementsWithListeners = document.querySelectorAll('[data-ink-cursor]');
+      elementsWithListeners.forEach(element => {
         element.removeEventListener('mouseenter', onMouseHover);
         element.removeEventListener('mouseleave', onMouseHoverOut);
+        element.removeAttribute('data-ink-cursor');
       });
     };
   }, []);
