@@ -72,25 +72,55 @@ const InkBlobCursor = () => {
       });
     };
 
-    // Hover handlers for hoverable elements
-    const onMouseHover = () => {
+    // Hover handlers for different element types
+    const onMouseHover = (e) => {
+      const element = e.target;
       setIsWriting(true);
-      bigBall.classList.add('ink-writing');
-      smallBall.classList.add('ink-writing');
-      gsap.to(bigBall, {
-        duration: 0.3,
-        scale: 2,
-        ease: "power2.out"
-      });
+      
+      if (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button') {
+        bigBall.classList.add('ink-writing', 'button-hover');
+        smallBall.classList.add('ink-writing');
+        gsap.to(bigBall, {
+          duration: 0.3,
+          scale: 2.2,
+          ease: "power2.out"
+        });
+      } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+        bigBall.classList.add('text-selecting');
+        smallBall.classList.add('text-selecting');
+        gsap.to(bigBall, {
+          duration: 0.3,
+          scale: 1.5,
+          rotation: 15,
+          ease: "power2.out"
+        });
+      } else if (element.tagName === 'A') {
+        bigBall.classList.add('ink-writing');
+        smallBall.classList.add('ink-writing');
+        gsap.to(bigBall, {
+          duration: 0.3,
+          scale: 1.8,
+          ease: "power2.out"
+        });
+      } else {
+        bigBall.classList.add('ink-writing');
+        smallBall.classList.add('ink-writing');
+        gsap.to(bigBall, {
+          duration: 0.3,
+          scale: 2,
+          ease: "power2.out"
+        });
+      }
     };
 
     const onMouseHoverOut = () => {
       setIsWriting(false);
-      bigBall.classList.remove('ink-writing');
-      smallBall.classList.remove('ink-writing');
+      bigBall.classList.remove('ink-writing', 'button-hover', 'text-selecting');
+      smallBall.classList.remove('ink-writing', 'text-selecting');
       gsap.to(bigBall, {
         duration: 0.3,
         scale: 1,
+        rotation: 0,
         ease: "power2.out"
       });
     };
