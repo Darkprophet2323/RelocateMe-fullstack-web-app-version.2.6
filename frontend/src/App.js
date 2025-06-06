@@ -6,212 +6,143 @@ import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// Spy Cursor Component - Fixed to Work on ALL Pages
+// Spy Cursor Component - Simple and Reliable Implementation
 const SpyCursor = () => {
   const bigBallRef = useRef(null);
   const smallBallRef = useRef(null);
 
   useEffect(() => {
-    const $bigBall = bigBallRef.current;
-    const $smallBall = smallBallRef.current;
+    const bigBall = bigBallRef.current;
+    const smallBall = smallBallRef.current;
 
-    if (!$bigBall || !$smallBall) return;
+    if (!bigBall || !smallBall) return;
 
     // Add custom cursor class to body
     document.body.classList.add('spy-cursor-active');
 
-    // Force initial positioning
-    gsap.set($bigBall, { x: 0, y: 0, scale: 1 });
-    gsap.set($smallBall, { x: 0, y: 0, scale: 1 });
+    // Simple mouse move handler
+    const handleMouseMove = (e) => {
+      if (bigBall && smallBall) {
+        bigBall.style.left = (e.clientX - 15) + 'px';
+        bigBall.style.top = (e.clientY - 15) + 'px';
+        smallBall.style.left = (e.clientX - 5) + 'px';
+        smallBall.style.top = (e.clientY - 5) + 'px';
+      }
+    };
 
-    // Move the cursor - exact implementation from example
-    function onMouseMove(e) {
-      gsap.to($bigBall, {
-        duration: 0.4,
-        x: e.pageX - 15,
-        y: e.pageY - 15
-      });
-      gsap.to($smallBall, {
-        duration: 0.1,
-        x: e.pageX - 5,
-        y: e.pageY - 7
-      });
-    }
+    // Simple hover handlers
+    const handleMouseEnter = () => {
+      if (bigBall) {
+        bigBall.style.transform = 'scale(4)';
+        bigBall.style.transition = 'transform 0.3s ease';
+      }
+    };
 
-    // Hover an element - exact implementation from example
-    function onMouseHover() {
-      gsap.to($bigBall, {
-        duration: 0.3,
-        scale: 4
-      });
-    }
+    const handleMouseLeave = () => {
+      if (bigBall) {
+        bigBall.style.transform = 'scale(1)';
+        bigBall.style.transition = 'transform 0.3s ease';
+      }
+    };
 
-    function onMouseHoverOut() {
-      gsap.to($bigBall, {
-        duration: 0.3,
-        scale: 1
-      });
-    }
+    // Add event listeners to document
+    document.addEventListener('mousemove', handleMouseMove);
 
-    // Add hoverable class to ALL interactive elements
-    const addHoverableClasses = () => {
-      const interactiveSelectors = [
+    // Function to add hover listeners to all interactive elements
+    const addHoverListeners = () => {
+      // Remove existing listeners first
+      document.querySelectorAll('.hoverable').forEach(element => {
+        element.removeEventListener('mouseenter', handleMouseEnter);
+        element.removeEventListener('mouseleave', handleMouseLeave);
+        element.classList.remove('hoverable');
+      });
+
+      // Add to all interactive elements
+      const selectors = [
         'button',
         'a',
         'input',
-        'textarea', 
+        'textarea',
         'select',
         '[role="button"]',
-        '[role="link"]',
-        '[role="tab"]',
-        '[role="menuitem"]',
-        '[data-testid]',
-        '.clickable',
-        '.btn',
-        '.link',
-        'label[for]',
         '[onclick]',
-        '[href]',
-        '[tabindex]:not([tabindex="-1"])',
-        'summary',
-        'details',
-        '.card',
-        '.hover\\:bg-gray-900',
-        '.hover\\:border-white',
-        '.group'
+        'label'
       ];
 
-      // Remove existing hoverable classes first
-      document.querySelectorAll('.hoverable').forEach(el => {
-        el.removeEventListener('mouseenter', onMouseHover);
-        el.removeEventListener('mouseleave', onMouseHoverOut);
-        el.classList.remove('hoverable');
+      selectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+          element.classList.add('hoverable');
+          element.addEventListener('mouseenter', handleMouseEnter);
+          element.addEventListener('mouseleave', handleMouseLeave);
+        });
       });
 
-      // Add hoverable class to ALL interactive elements
-      interactiveSelectors.forEach(selector => {
-        try {
-          document.querySelectorAll(selector).forEach(element => {
-            if (!element.classList.contains('hoverable')) {
-              element.classList.add('hoverable');
-              element.addEventListener('mouseenter', onMouseHover);
-              element.addEventListener('mouseleave', onMouseHoverOut);
-            }
-          });
-        } catch (e) {
-          // Skip invalid selectors
-        }
-      });
-
-      // Also add to any element with cursor pointer
-      const allElements = document.querySelectorAll('*');
-      allElements.forEach(element => {
-        try {
-          const computedStyle = window.getComputedStyle(element);
-          if (computedStyle.cursor === 'pointer' && !element.classList.contains('hoverable')) {
-            element.classList.add('hoverable');
-            element.addEventListener('mouseenter', onMouseHover);
-            element.addEventListener('mouseleave', onMouseHoverOut);
-          }
-        } catch (e) {
-          // Skip elements that can't be styled
-        }
-      });
+      console.log('Added hover listeners to', document.querySelectorAll('.hoverable').length, 'elements');
     };
 
     // Initial setup
-    addHoverableClasses();
+    addHoverListeners();
 
-    // Aggressive re-application on DOM changes
+    // Re-add listeners when DOM changes
     const observer = new MutationObserver(() => {
-      clearTimeout(window.hoverableUpdateTimeout);
-      window.hoverableUpdateTimeout = setTimeout(addHoverableClasses, 50);
+      setTimeout(addHoverListeners, 100);
     });
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class', 'role', 'onclick', 'href', 'tabindex']
+      subtree: true
     });
-
-    // Listen for all mouse movement
-    document.addEventListener('mousemove', onMouseMove);
-    document.body.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousemove', onMouseMove);
-
-    // Listen for route changes and page loads
-    const handlePageChange = () => {
-      setTimeout(() => {
-        addHoverableClasses();
-        // Re-add cursor classes
-        document.body.classList.add('spy-cursor-active');
-      }, 100);
-    };
-
-    // Listen for various navigation events
-    window.addEventListener('popstate', handlePageChange);
-    window.addEventListener('load', handlePageChange);
-    window.addEventListener('DOMContentLoaded', handlePageChange);
-
-    // Override history methods to detect route changes
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-      originalPushState.apply(this, args);
-      handlePageChange();
-    };
-
-    const originalReplaceState = history.replaceState;
-    history.replaceState = function(...args) {
-      originalReplaceState.apply(this, args);
-      handlePageChange();
-    };
-
-    // Periodic re-application to ensure cursor always works
-    const periodicUpdate = setInterval(() => {
-      if (!document.body.classList.contains('spy-cursor-active')) {
-        document.body.classList.add('spy-cursor-active');
-      }
-      addHoverableClasses();
-    }, 2000);
 
     // Cleanup
     return () => {
       document.body.classList.remove('spy-cursor-active');
-      document.removeEventListener('mousemove', onMouseMove);
-      document.body.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('popstate', handlePageChange);
-      window.removeEventListener('load', handlePageChange);
-      window.removeEventListener('DOMContentLoaded', handlePageChange);
+      document.removeEventListener('mousemove', handleMouseMove);
       observer.disconnect();
-      clearInterval(periodicUpdate);
       
-      // Restore original history methods
-      history.pushState = originalPushState;
-      history.replaceState = originalReplaceState;
-      
-      // Remove hover listeners
-      document.querySelectorAll('.hoverable').forEach(el => {
-        el.removeEventListener('mouseenter', onMouseHover);
-        el.removeEventListener('mouseleave', onMouseHoverOut);
+      document.querySelectorAll('.hoverable').forEach(element => {
+        element.removeEventListener('mouseenter', handleMouseEnter);
+        element.removeEventListener('mouseleave', handleMouseLeave);
       });
-
-      clearTimeout(window.hoverableUpdateTimeout);
     };
   }, []);
 
   return (
     <div className="cursor">
-      <div ref={bigBallRef} className="cursor__ball cursor__ball--big">
-        <svg height="30" width="30">
-          <circle cx="15" cy="15" r="12" strokeWidth="0"></circle>
+      <div 
+        ref={bigBallRef} 
+        className="cursor__ball cursor__ball--big"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '30px',
+          height: '30px',
+          pointerEvents: 'none',
+          zIndex: 10000,
+          mixBlendMode: 'difference'
+        }}
+      >
+        <svg height="30" width="30" style={{ display: 'block' }}>
+          <circle cx="15" cy="15" r="12" strokeWidth="0" fill="#f7f8fa"></circle>
         </svg>
       </div>
       
-      <div ref={smallBallRef} className="cursor__ball cursor__ball--small">
-        <svg height="10" width="10">
-          <circle cx="5" cy="5" r="4" strokeWidth="0"></circle>
+      <div 
+        ref={smallBallRef} 
+        className="cursor__ball cursor__ball--small"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '10px',
+          height: '10px',
+          pointerEvents: 'none',
+          zIndex: 10000,
+          mixBlendMode: 'difference'
+        }}
+      >
+        <svg height="10" width="10" style={{ display: 'block' }}>
+          <circle cx="5" cy="5" r="4" strokeWidth="0" fill="#f7f8fa"></circle>
         </svg>
       </div>
     </div>
