@@ -2312,7 +2312,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={currentPhase === 'authenticating'}
-              className="w-full bg-white text-black py-3 font-mono font-bold tracking-wider hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
+              className="hoverable primary-button w-full disabled:opacity-50"
             >
               {currentPhase === 'authenticating' ? "EXECUTING BACKDOOR..." : "AUTHENTICATE WITH BACKDOOR"}
             </button>
