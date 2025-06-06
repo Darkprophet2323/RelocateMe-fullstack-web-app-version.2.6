@@ -4,24 +4,25 @@
   position: fixed;
   top: 0;
   left: 0;
-  mix-blend-mode: difference;
   z-index: 9999;
   pointer-events: none;
   border-radius: 50%;
+  mix-blend-mode: normal;
 }
 
 .cursor__ball--big {
   width: 30px;
   height: 30px;
-  background: #ffffff;
-  opacity: 0.8;
+  background: radial-gradient(circle, #000000 40%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.3) 100%);
+  opacity: 0.9;
   transition: transform 0.4s ease-out;
+  filter: blur(1px);
 }
 
 .cursor__ball--small {
-  width: 10px;
-  height: 10px;
-  background: #ffffff;
+  width: 8px;
+  height: 8px;
+  background: #000000;
   opacity: 1;
   transition: transform 0.1s ease-out;
 }
@@ -37,71 +38,143 @@
 
 /* Ink blob effect variations */
 .cursor__ball--big.ink-writing {
-  background: radial-gradient(circle, #000000 30%, rgba(0,0,0,0.8) 60%, rgba(0,0,0,0.4) 80%);
+  background: radial-gradient(ellipse, #000000 20%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.2) 100%);
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  animation: ink-morph 2s ease-in-out infinite;
+  animation: ink-morph 3s ease-in-out infinite;
+  filter: blur(1.5px);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .cursor__ball--small.ink-writing {
-  background: #000000;
+  background: radial-gradient(circle, #000000 60%, rgba(0,0,0,0.8) 100%);
   border-radius: 50% 80% 30% 60%;
-  animation: ink-drip 1.5s ease-in-out infinite;
+  animation: ink-drip 2s ease-in-out infinite;
+  filter: blur(0.5px);
 }
 
 @keyframes ink-morph {
   0%, 100% {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    transform: rotate(0deg);
+    transform: rotate(0deg) scale(1);
   }
   25% {
     border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
   }
   50% {
     border-radius: 70% 30% 60% 40% / 40% 70% 60% 30%;
-    transform: rotate(180deg);
+    transform: rotate(180deg) scale(0.9);
   }
   75% {
     border-radius: 40% 70% 30% 60% / 60% 40% 70% 30%;
-    transform: rotate(270deg);
+    transform: rotate(270deg) scale(1.05);
   }
 }
 
 @keyframes ink-drip {
   0%, 100% {
     border-radius: 50% 80% 30% 60%;
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
-  50% {
+  33% {
     border-radius: 80% 30% 60% 50%;
-    transform: scale(0.8);
+    transform: scale(0.8) rotate(120deg);
   }
-}
-
-/* Hoverable elements get special ink effect */
-.hoverable:hover ~ .cursor__ball--big,
-.hoverable:hover ~ .cursor__ball--small,
-.cursor__ball--big.hovering,
-.cursor__ball--small.hovering {
-  animation-duration: 0.5s;
+  66% {
+    border-radius: 30% 60% 50% 80%;
+    transform: scale(1.2) rotate(240deg);
+  }
 }
 
 /* Special cursor states */
 .cursor__ball--big.clicking {
-  background: radial-gradient(circle, #ff0000 20%, #000000 40%, rgba(0,0,0,0.6) 80%);
-  transform: scale(1.5) !important;
+  background: radial-gradient(circle, #333333 20%, #000000 50%, rgba(0,0,0,0.8) 80%);
+  transform: scale(1.8) !important;
   border-radius: 30% 70% 50% 50% / 60% 40% 60% 40%;
+  filter: blur(2px);
+  animation: ink-splash 0.3s ease-out;
 }
 
 .cursor__ball--small.clicking {
-  background: #ff0000;
-  transform: scale(1.8) !important;
+  background: #333333;
+  transform: scale(2.5) !important;
+  filter: blur(1px);
 }
 
-/* Text selection cursor */
+@keyframes ink-splash {
+  0% {
+    border-radius: 50%;
+    filter: blur(1px);
+  }
+  50% {
+    border-radius: 20% 80% 30% 70% / 40% 60% 50% 80%;
+    filter: blur(3px);
+  }
+  100% {
+    border-radius: 30% 70% 50% 50% / 60% 40% 60% 40%;
+    filter: blur(2px);
+  }
+}
+
+/* Text selection and input cursor */
 .cursor__ball--big.text-selecting {
-  background: linear-gradient(45deg, #000000, #333333);
+  background: linear-gradient(45deg, #000000, #444444, #000000);
   border-radius: 10% 90% 20% 80% / 30% 70% 30% 70%;
+  animation: ink-flow 1.5s ease-in-out infinite;
+  transform: rotate(15deg);
+}
+
+.cursor__ball--small.text-selecting {
+  background: #000000;
+  border-radius: 20% 80% 60% 40%;
+  animation: ink-droplet 1s ease-in-out infinite;
+}
+
+@keyframes ink-flow {
+  0%, 100% {
+    border-radius: 10% 90% 20% 80% / 30% 70% 30% 70%;
+    opacity: 0.9;
+  }
+  50% {
+    border-radius: 40% 60% 80% 20% / 70% 30% 70% 30%;
+    opacity: 0.7;
+  }
+}
+
+@keyframes ink-droplet {
+  0%, 100% {
+    border-radius: 50%;
+    transform: scale(1);
+  }
+  50% {
+    border-radius: 30% 70% 60% 40%;
+    transform: scale(0.7);
+  }
+}
+
+/* Hover effect for buttons and links */
+.hoverable {
+  transition: all 0.3s ease;
+}
+
+.hoverable:hover {
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Special cursor for different elements */
+.cursor__ball--big.button-hover {
+  background: radial-gradient(circle, #1a1a1a 30%, #000000 60%, rgba(0,0,0,0.8) 90%);
+  border-radius: 45% 55% 35% 65% / 55% 35% 65% 45%;
+  animation: button-ink 1s ease-in-out infinite;
+}
+
+@keyframes button-ink {
+  0%, 100% {
+    border-radius: 45% 55% 35% 65% / 55% 35% 65% 45%;
+  }
+  50% {
+    border-radius: 35% 65% 55% 45% / 45% 55% 35% 65%;
+  }
 }
 
 /* NOIR HACKING ANIMATION STYLES */
