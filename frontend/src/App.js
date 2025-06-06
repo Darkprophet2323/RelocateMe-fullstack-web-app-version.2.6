@@ -6,123 +6,56 @@ import { gsap } from "gsap";
 
 const API = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-// Spy Cursor Component for Noir Theme
+// Spy Cursor Component - Exact Implementation from Example
 const SpyCursor = () => {
   const bigBallRef = useRef(null);
   const smallBallRef = useRef(null);
-  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    const bigBall = bigBallRef.current;
-    const smallBall = smallBallRef.current;
+    const $bigBall = bigBallRef.current;
+    const $smallBall = smallBallRef.current;
 
-    if (!bigBall || !smallBall) return;
+    if (!$bigBall || !$smallBall) return;
 
     // Add custom cursor class to body
     document.body.classList.add('spy-cursor-active');
 
-    // Initialize cursor position at center of screen
-    const initX = window.innerWidth / 2;
-    const initY = window.innerHeight / 2;
-    
-    gsap.set(bigBall, { x: initX - 15, y: initY - 15 });
-    gsap.set(smallBall, { x: initX - 5, y: initY - 5 });
-
-    // Mouse move handler using GSAP (TweenMax equivalent)
-    const onMouseMove = (e) => {
-      gsap.to(bigBall, {
+    // Move the cursor - exact implementation from example
+    function onMouseMove(e) {
+      gsap.to($bigBall, {
         duration: 0.4,
-        x: e.clientX - 15,
-        y: e.clientY - 15,
-        ease: "power2.out"
+        x: e.pageX - 15,
+        y: e.pageY - 15
       });
-      gsap.to(smallBall, {
+      gsap.to($smallBall, {
         duration: 0.1,
-        x: e.clientX - 5,
-        y: e.clientY - 5,
-        ease: "power2.out"
+        x: e.pageX - 5,
+        y: e.pageY - 7
       });
-    };
+    }
 
-    // Hover handlers for spy effect
-    const onMouseHover = (e) => {
-      const element = e.target;
-      setIsHovering(true);
-      
-      if (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button') {
-        gsap.to(bigBall, {
-          duration: 0.3,
-          scale: 5,
-          ease: "power2.out"
-        });
-      } else if (element.tagName === 'A') {
-        gsap.to(bigBall, {
-          duration: 0.3,
-          scale: 6,
-          ease: "power2.out"
-        });
-      } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-        gsap.to(bigBall, {
-          duration: 0.3,
-          scale: 3,
-          ease: "power2.out"
-        });
-      } else {
-        gsap.to(bigBall, {
-          duration: 0.3,
-          scale: 4,
-          ease: "power2.out"
-        });
-      }
-    };
-
-    const onMouseHoverOut = () => {
-      setIsHovering(false);
-      gsap.to(bigBall, {
+    // Hover an element - exact implementation from example
+    function onMouseHover() {
+      gsap.to($bigBall, {
         duration: 0.3,
-        scale: 1,
-        ease: "power2.out"
+        scale: 4
       });
-    };
+    }
 
-    // Click effect
-    const onMouseDown = () => {
-      gsap.to(bigBall, {
-        duration: 0.1,
-        scale: isHovering ? 8 : 2,
-        ease: "power2.out"
+    function onMouseHoverOut() {
+      gsap.to($bigBall, {
+        duration: 0.3,
+        scale: 1
       });
-      gsap.to(smallBall, {
-        duration: 0.1,
-        scale: 2,
-        ease: "power2.out"
-      });
-    };
-
-    const onMouseUp = () => {
-      gsap.to(bigBall, {
-        duration: 0.2,
-        scale: isHovering ? 4 : 1,
-        ease: "power2.out"
-      });
-      gsap.to(smallBall, {
-        duration: 0.2,
-        scale: 1,
-        ease: "power2.out"
-      });
-    };
+    }
 
     // Add hover listeners to interactive elements
     const addHoverListeners = () => {
-      const hoverableElements = document.querySelectorAll('button, a, input, textarea, [role="button"], .hoverable, [data-testid], .clickable');
-      hoverableElements.forEach(element => {
-        if (!element.hasAttribute('data-spy-cursor')) {
-          element.addEventListener('mouseenter', onMouseHover);
-          element.addEventListener('mouseleave', onMouseHoverOut);
-          element.classList.add('hoverable');
-          element.setAttribute('data-spy-cursor', 'true');
-        }
-      });
+      const $hoverables = document.querySelectorAll('.hoverable');
+      for (let i = 0; i < $hoverables.length; i++) {
+        $hoverables[i].addEventListener('mouseenter', onMouseHover);
+        $hoverables[i].addEventListener('mouseleave', onMouseHoverOut);
+      }
     };
 
     // Initial setup
@@ -138,40 +71,35 @@ const SpyCursor = () => {
       subtree: true
     });
 
-    // Add event listeners
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
+    // Listeners - exact implementation from example
+    document.body.addEventListener('mousemove', onMouseMove);
 
     // Cleanup
     return () => {
       document.body.classList.remove('spy-cursor-active');
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.body.removeEventListener('mousemove', onMouseMove);
       observer.disconnect();
       
-      // Remove listeners from all elements with data-spy-cursor
-      const elementsWithListeners = document.querySelectorAll('[data-spy-cursor]');
-      elementsWithListeners.forEach(element => {
-        element.removeEventListener('mouseenter', onMouseHover);
-        element.removeEventListener('mouseleave', onMouseHoverOut);
-        element.removeAttribute('data-spy-cursor');
-      });
+      // Remove hover listeners
+      const $hoverables = document.querySelectorAll('.hoverable');
+      for (let i = 0; i < $hoverables.length; i++) {
+        $hoverables[i].removeEventListener('mouseenter', onMouseHover);
+        $hoverables[i].removeEventListener('mouseleave', onMouseHoverOut);
+      }
     };
-  }, [isHovering]);
+  }, []);
 
   return (
-    <div className="spy-cursor">
-      <div ref={bigBallRef} className="cursor__ball cursor__ball--big" style={{ position: 'fixed', zIndex: 10000 }}>
-        <svg height="30" width="30" style={{ display: 'block', width: '100%', height: '100%' }}>
-          <circle cx="15" cy="15" r="12" strokeWidth="0" fill="#f7f8fa"></circle>
+    <div className="cursor">
+      <div ref={bigBallRef} className="cursor__ball cursor__ball--big">
+        <svg height="30" width="30">
+          <circle cx="15" cy="15" r="12" strokeWidth="0"></circle>
         </svg>
       </div>
       
-      <div ref={smallBallRef} className="cursor__ball cursor__ball--small" style={{ position: 'fixed', zIndex: 10000 }}>
-        <svg height="10" width="10" style={{ display: 'block', width: '100%', height: '100%' }}>
-          <circle cx="5" cy="5" r="4" strokeWidth="0" fill="#f7f8fa"></circle>
+      <div ref={smallBallRef} className="cursor__ball cursor__ball--small">
+        <svg height="10" width="10">
+          <circle cx="5" cy="5" r="4" strokeWidth="0"></circle>
         </svg>
       </div>
     </div>
