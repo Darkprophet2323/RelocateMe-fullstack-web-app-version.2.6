@@ -983,7 +983,7 @@ const VisaPage = () => {
                 'border-l-gray-500 bg-gray-900'
               ];
               
-              const categoryDocs = documents.filter(doc => doc.trim() !== '');
+              const categoryDocs = Array.isArray(documents) ? documents.filter(doc => doc.trim() !== '') : [];
               const checkedInCategory = categoryDocs.filter((_, docIndex) => 
                 documentChecklist[`${category}_${docIndex}`]
               ).length;
